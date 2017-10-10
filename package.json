@@ -14,13 +14,14 @@
     "gulp-sourcemaps": "^2.6.1"
   },
   "dependencies": {
-    "gluonjs": "^2.0.0-preview.4",
+    "gluon-keybinding": "^0.0.1",
     "gluon-router": "^0.0.2",
-    "gluon-keybinding": "^0.0.1"
+    "gluonjs": "^2.0.0-preview.4"
   },
   "scripts": {
     "build": "gulp",
     "dev": "gulp serve",
     "publish": "git add slidem-*.js*"
-  }
+  },
+  "version": "0.0.1"
 }
