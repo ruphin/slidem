@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+<script type="module" src="src/slidem-deck.js"></script>
+<script type="module" src="src/slidem-slide.js">
+</script>
+
+<style>
+  body {
+    margin: 0;
+  }
+
+   :root {
+    --primary: rgb(255, 42, 105);
+  }
+
+  .center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  slidem-deck[loading] {
+    display: none;
+  }
+</style>
+
+<!-- build:remove -->
+<span id="browser-sync-binding"></span>
+<!-- endbuild -->
+
+<slidem-deck loading>
+  <slidem-slide background="--primary">
+    <h1 uppercase fit color="black">Slid'em</h1>
+    <p uppercase fit color="white">A presentation web component</p>
+    <p uppercase fit color="black">So you can write your decks in html</p>
+    <p uppercase center color="white"><a href="https://github.com/ruphin/slidem">View on GitHub</a></p>
+    <p center line-height="2" color="black">Hit Your Right Arrow To Begin!</p>
+  </slidem-slide>
+
+  <slidem-slide background="black">
+    <div class="center">
+      <img src="/images/what.png">
+    </div>
+    <p line-height="2" uppercase fit color="--primary">Wait what?</p>
+  </slidem-slide>
+
+  <slidem-slide background="--primary">
+    <div class="center">
+      <img src="/images/codeSample.png" width="100%">
+    </div>
+  </slidem-slide>
+
+  <slidem-slide darken-background=".75 " background="/images/streetView.jpg">
+    <h1 fit uppercase color="--primary">Full width</h1>
+    <slidem-reveal>
+      <p fit uppercase color="white">Adjustable darkness</p>
+    </slidem-reveal>
+    <slidem-reveal>
+      <p fit uppercase color="--primary">Background imagery</p>
+    </slidem-reveal>
+  </slidem-slide>
+
+  <slidem-slide background="white">
+    <p fit uppercase color="--primary">Design shamelessly copied from</p>
+    <p fit uppercase color="black" line-height="1.3"><a href="http://formidable.com/open-source/spectacle/">Spectacle</a></p>
+    <slidem-reveal>
+      <p center uppercase color="--primary"> with love</p>
+    </slidem-reveal>
+  </slidem-slide>
+</slidem-deck>

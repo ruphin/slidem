@@ -1,0 +1,26 @@
+{
+  "name": "slidem",
+  "description": "A Web Component based slide deck",
+  "main": "slidem-deck.js",
+  "repository": "git@github.com:ruphin/slidem.git",
+  "author": "Goffert van Gool",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-preset-minify": "^0.2.0",
+    "browser-sync": "^2.18.13",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^7.0.0",
+    "gulp-sourcemaps": "^2.6.1"
+  },
+  "dependencies": {
+    "gluonjs": "^2.0.0-preview.4",
+    "gluon-router": "^0.0.2",
+    "gluon-keybinding": "^0.0.1"
+  },
+  "scripts": {
+    "build": "gulp",
+    "dev": "gulp serve",
+    "publish": "git add slidem-*.js*"
+  }
+}
