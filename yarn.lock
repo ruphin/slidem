@@ -1105,6 +1105,10 @@ flagged-respawn@^0.3.2:
   version "0.3.2"
   resolved "https://registry.yarnpkg.com/flagged-respawn/-/flagged-respawn-0.3.2.tgz#ff191eddcd7088a675b2610fffc976be9b8074b5"
 
+fontfaceobserver@^2.0.13:
+  version "2.0.13"
+  resolved "https://registry.yarnpkg.com/fontfaceobserver/-/fontfaceobserver-2.0.13.tgz#47adbb343261eda98cb44db2152196ff124d3221"
+
 for-in@^1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/for-in/-/for-in-1.0.2.tgz#81068d295a8142ec0ac726c6e2200c30fb6d5e80"
@@ -1318,9 +1322,9 @@ gluon-keybinding@^0.0.1:
   dependencies:
     gluonjs "^2.0.0-preview.4"
 
-gluon-router@^0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/gluon-router/-/gluon-router-0.0.2.tgz#63aaa40488d7b8499efb9515695f892d3d6d9ba6"
+gluon-router@^0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/gluon-router/-/gluon-router-0.0.3.tgz#014db10dd1df44f2e683d757c73490760ca1d691"
 
 gluonjs@^2.0.0-preview.4:
   version "2.0.0-preview.4"

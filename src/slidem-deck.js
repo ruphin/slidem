@@ -1,5 +1,7 @@
 import { GluonElement, html } from '../gluonjs/gluon.js';
 import { onRouteChange, currentPath, currentHash } from '../gluon-router/gluon-router.js';
+
+import '../fontfaceobserver/fontfaceobserver.standalone.js';
 import '../gluon-keybinding/gluon-keybinding.js';
 
 const fontNode = document.createElement('link');
@@ -29,7 +31,7 @@ const styleText = document.createTextNode(`
     text-decoration: none;
   }
   slidem-deck slidem-slide slidem-reveal {
-    display: inherit;
+    display: block;
     opacity: 0;
     transition: opacity 0.2s;
   }
@@ -45,7 +47,6 @@ document.head.appendChild(styleNode);
 class SlidemDeck extends GluonElement {
   get template() {
     return html`
-      <div class="fontLoader">a</div>
       <div class="slides">
         <slot id="slides"></slot>
       </div>
@@ -65,12 +66,6 @@ class SlidemDeck extends GluonElement {
           left: 0;
           bottom: 0;
           right: 0;
-        }
-        .fontLoader {
-          position: absolute;
-          top: -9999px;
-          left: -99999px;
-          font-family: 'Open Sans Condensed', sans-serif;
         }
         .slides {
           height: 100%;
@@ -161,9 +156,9 @@ class SlidemDeck extends GluonElement {
     };
 
     this.removeAttribute('loading');
-    setTimeout(() => {
-      window.dispatchEvent(new Event('location-changed'));
-    }, 200);
+
+    const load = () => window.dispatchEvent(new Event('location-changed'));
+    new FontFaceObserver('Open Sans Condensed', { weight: 700 }).load().then(load, load);
   }
 
   get currentSlide() {

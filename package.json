@@ -15,8 +15,9 @@
   },
   "dependencies": {
     "gluon-keybinding": "^0.0.1",
-    "gluon-router": "^0.0.2",
-    "gluonjs": "^2.0.0-preview.4"
+    "gluon-router": "^0.0.3",
+    "gluonjs": "^2.0.0-preview.4",
+    "fontfaceobserver": "^2.0.13"
   },
   "scripts": {
     "build": "gulp",

@@ -126,7 +126,7 @@ class SlidemSlide extends GluonElement {
         textNode.style.display = 'table';
         const refFontSize = parseFloat(window.getComputedStyle(textNode, null).getPropertyValue('font-size'));
         const refWidth = this.$.content.clientWidth;
-        textNode.style.fontSize = refFontSize * refWidth / textNode.clientWidth + 'px';
+        textNode.style.fontSize = `${Math.floor(refFontSize * refWidth / textNode.clientWidth) - 1}px`;
       }
     });
   }
