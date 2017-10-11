@@ -1,0 +1,6 @@
+node_modules
+!node_modules/lit-html
+!node_modules/gluonjs
+!node_modules/gluon-router
+!node_modules/gluon-keybinding
+!node_modules/fontfaceobserver
