@@ -1,42 +1,39 @@
 import { GluonElement, html } from '../gluonjs/gluon.js';
 import { onRouteChange, currentPath, currentHash } from '../gluon-router/gluon-router.js';
+import './slidem-slide.js';
 
 import '../fontfaceobserver/fontfaceobserver.standalone.js';
 import '../gluon-keybinding/gluon-keybinding.js';
 
-const fontNode = document.createElement('link');
-fontNode.href = 'https://fonts.googleapis.com/css?family=Open+Sans+Condensed:700';
-fontNode.rel = 'stylesheet';
-document.head.appendChild(fontNode);
-
 const styleText = document.createTextNode(`
   /* SLIDEM SHARED STYLE */
-  slidem-deck slidem-slide {
-    font-family: 'Open Sans Condensed', sans-serif;
-    font-size: 56px;
-    line-height: 1;
+  body {
+    margin: 0;
   }
+
   slidem-deck slidem-slide h1,
   slidem-deck slidem-slide h2,
   slidem-deck slidem-slide h3,
   slidem-deck slidem-slide h4,
   slidem-deck slidem-slide h5,
   slidem-deck slidem-slide h6,
-  slidem-deck slidem-slide p{
+  slidem-deck slidem-slide p {
     margin-top: 0px;
     margin-bottom: 0px;
   }
+
+  /* Avoid overflow which breaks width calculation */
+  slidem-deck slidem-slide [fit] {
+    font-size: 30px;
+  }
+
   slidem-deck slidem-slide a {
     color: inherit;
     text-decoration: none;
   }
-  slidem-deck slidem-slide slidem-reveal {
-    display: block;
-    opacity: 0;
+
+  [reveal] {
     transition: opacity 0.2s;
-  }
-  slidem-deck slidem-slide slidem-reveal[revealed] {
-    opacity: 1;
   }
 `);
 
@@ -66,6 +63,9 @@ class SlidemDeck extends GluonElement {
           left: 0;
           bottom: 0;
           right: 0;
+          font-family: 'sans-serif';
+          font-size: 56px;
+          line-height: 1;
         }
         .slides {
           height: 100%;
@@ -81,6 +81,7 @@ class SlidemDeck extends GluonElement {
           display: flex;
           flex-flow: row;
           justify-content: center;
+          z-index: 10;
         }
         #progress div {
           height: 8px;
@@ -95,21 +96,6 @@ class SlidemDeck extends GluonElement {
         #progress div.active {
           background: white;
         }
-        #forward {
-          right: 0;
-        }
-        #backward {
-          left: 0;
-        }
-        #forward, #backward {
-          position: absolute;
-          top: 0;
-          bottom: 0;
-          width: 20%;
-        }
-        #forward:hover, #backward:hover {
-          background: rgba(255,255,255,0.1);
-        }
       </style>
     `;
   }
@@ -118,18 +104,44 @@ class SlidemDeck extends GluonElement {
     super.connectedCallback();
     this.slides = Array.from(this.getElementsByTagName('slidem-slide'));
     this.slides.forEach(slide => {
-      slide._steps = Array.from(slide.getElementsByTagName('slidem-reveal'));
       this.$.progress.appendChild(document.createElement('div'));
     });
 
     onRouteChange(() => {
+      this.slides[this.currentSlide].step = this.currentStep + 1;
+      this.slides[this.currentSlide].active = true;
+      this.slides[this.currentSlide].classList.add('animate-in');
+
+      if (this.previousSlide === this.currentSlide) {
+        return;
+      }
       if (this.previousSlide !== undefined) {
-        this.slides[this.previousSlide].active = false;
-        this.$.progress.children[this.previousSlide].classList.remove('active');
+        if (this.previousSlide < this.currentSlide) {
+          this.slides[this.previousSlide].classList.add('animate-forward');
+          this.slides[this.currentSlide].classList.add('animate-forward');
+          this.slides[this.previousSlide].classList.remove('animate-backward');
+          this.slides[this.currentSlide].classList.remove('animate-backward');
+        } else {
+          this.slides[this.previousSlide].classList.add('animate-backward');
+          this.slides[this.currentSlide].classList.add('animate-backward');
+          this.slides[this.previousSlide].classList.remove('animate-forward');
+          this.slides[this.currentSlide].classList.remove('animate-forward');
+        }
+      }
+      if (this.fadeOutSlide !== undefined) {
+        this.slides[this.fadeOutSlide].classList.remove('animate-out');
+        if (this.fadeOutSlide !== this.currentSlide) {
+          this.slides[this.fadeOutSlide].active = false;
+        }
       }
 
-      this.slides[this.currentSlide].active = true;
-      this.slides[this.currentSlide].step = this.currentStep + 1;
+      if (this.previousSlide !== undefined) {
+        this.slides[this.previousSlide].classList.remove('animate-in');
+        this.slides[this.previousSlide].classList.add('animate-out');
+        this.$.progress.children[this.previousSlide].classList.remove('active');
+        this.fadeOutSlide = this.previousSlide;
+      }
+
       this.$.progress.children[this.currentSlide].classList.add('active');
 
       this.previousSlide = this.currentSlide;
@@ -157,8 +169,17 @@ class SlidemDeck extends GluonElement {
 
     this.removeAttribute('loading');
 
-    const load = () => window.dispatchEvent(new Event('location-changed'));
-    new FontFaceObserver('Open Sans Condensed', { weight: 700 }).load().then(load, load);
+    const init = () => {
+      window.dispatchEvent(new Event('location-changed'));
+    };
+
+    const font = this.getAttribute('font');
+    if (font) {
+      this.style.fontFamily = font;
+      new FontFaceObserver(font).load().then(init, init);
+    } else {
+      init();
+    }
   }
 
   get currentSlide() {
