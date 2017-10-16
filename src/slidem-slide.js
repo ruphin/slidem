@@ -116,9 +116,10 @@ class SlidemSlide extends GluonElement {
 
         #content {
           width: 100%;
-          max-width: 1080px;
-          max-height: 760px;
+          max-width: var(--slidem-content-width, 1760px);
+          max-height: var(--slidem-content-height, 920px);
         }
+
         :host(:not([center])) #content {
           height: 100%;
         }
@@ -137,7 +138,7 @@ class SlidemSlide extends GluonElement {
         if (darken) {
           image = `linear-gradient(rgba(0,0,0,${darken}), rgba(0,0,0,${darken})), url(${image})`;
         }
-        this.style.backgroundImage = image;
+        this.style.backgroundImage = `url(${image})`;
       } else {
         this.style.background = background;
       }
