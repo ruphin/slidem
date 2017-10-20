@@ -49,9 +49,11 @@ class SlidemDeck extends GluonElement {
       </div>
       <div id="progress"></div>
       <div id="forward">
+        <gluon-keybinding key="PageDown"></gluon-keybinding>
         <gluon-keybinding key="ArrowRight"></gluon-keybinding>
       </div>
       <div id="backward">
+        <gluon-keybinding key="PageUp"></gluon-keybinding>
         <gluon-keybinding key="ArrowLeft"></gluon-keybinding>
       </div>
       <style>
