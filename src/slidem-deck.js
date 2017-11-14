@@ -1,6 +1,5 @@
 import { GluonElement, html } from '../gluonjs/gluon.js';
 import { onRouteChange, currentPath, currentHash } from '../gluon-router/gluon-router.js';
-import './slidem-slide.js';
 
 import '../fontfaceobserver/fontfaceobserver.standalone.js';
 import '../gluon-keybinding/gluon-keybinding.js';
@@ -11,29 +10,13 @@ const styleText = document.createTextNode(`
     margin: 0;
   }
 
-  slidem-deck slidem-slide h1,
-  slidem-deck slidem-slide h2,
-  slidem-deck slidem-slide h3,
-  slidem-deck slidem-slide h4,
-  slidem-deck slidem-slide h5,
-  slidem-deck slidem-slide h6,
-  slidem-deck slidem-slide p {
-    margin-top: 0px;
-    margin-bottom: 0px;
-  }
-
-  /* Avoid overflow which breaks width calculation */
-  slidem-deck slidem-slide [fit] {
-    font-size: 30px;
-  }
-
-  slidem-deck slidem-slide a {
-    color: inherit;
-    text-decoration: none;
-  }
-
   [reveal] {
+    opacity: 0;
     transition: opacity 0.2s;
+  }
+
+  slidem-deck > *:not([active]) {
+    display: none;
   }
 `);
 
@@ -104,7 +87,7 @@ class SlidemDeck extends GluonElement {
 
   connectedCallback() {
     super.connectedCallback();
-    this.slides = Array.from(this.getElementsByTagName('slidem-slide'));
+    this.slides = Array.from(this.children);
     this.slides.forEach(slide => {
       this.$.progress.appendChild(document.createElement('div'));
     });
@@ -170,6 +153,10 @@ class SlidemDeck extends GluonElement {
     };
 
     this.removeAttribute('loading');
+
+    window.addEventListener('resize', () => {
+      console.log('resize!');
+    });
 
     const init = () => {
       window.dispatchEvent(new Event('location-changed'));

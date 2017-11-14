@@ -1,0 +1,23 @@
+Deck:
+
+- Navigation
+- Show/hide children
+- Basic animations?
+- Check steps property on children
+- Otherwise ignore steps
+- Font loader mechanism
+- Query Slide for used fonts
+
+
+Slide:
+
+- Implement steps / expose step setter and steps number
+- Content / center
+- Scaling?
+
+
+BasicSlide:
+
+- Font helpers
+- Background helpers
+
