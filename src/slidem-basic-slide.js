@@ -43,7 +43,7 @@ export class SlidemBasicSlide extends SlidemSlide {
       }
     }
 
-    this.textNodes = Array.from(this.querySelectorAll('h1, h2, h3, h4, h5, h6, p'));
+    this.textNodes = Array.from(this.querySelectorAll('h1, h2, h3, h4, h5, h6, p, span'));
     this.textNodes.forEach(textNode => {
       if (textNode.getAttribute('bold') !== null) {
         textNode.style.fontWeight = 'bold';
@@ -80,8 +80,14 @@ export class SlidemBasicSlide extends SlidemSlide {
     });
   }
 
+  static get observedAttributes() {
+    const attrs = super.observedAttributes || [];
+    attrs.push('active');
+    return attrs;
+  }
+
   attributeChangedCallback(attr, oldVal, newVal) {
-    super.attributeChangedCallback();
+    super.attributeChangedCallback(attr, oldVal, newVal);
     if (attr === 'active') {
       if (newVal !== null) {
         this.__rescale();
@@ -100,5 +106,5 @@ export class SlidemBasicSlide extends SlidemSlide {
     });
   }
 }
-console.log(SlidemBasicSlide.name);
+
 customElements.define(SlidemBasicSlide.is, SlidemBasicSlide);

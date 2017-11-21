@@ -1,14 +1,8 @@
 const gulp = require('gulp');
-const path = require('path');
-const babel = require('gulp-babel');
 const browserSync = require('browser-sync');
 const sourcemaps = require('gulp-sourcemaps');
+const uglify = require('gulp-uglify-es').default;
 const historyApiFallback = require('connect-history-api-fallback');
-
-const SOURCE = 'src';
-const source = function(...subpaths) {
-  return subpaths.length == 0 ? SOURCE : path.join(SOURCE, ...subpaths);
-};
 
 // Watch files for changes & reload
 gulp.task('serve', function() {
@@ -17,7 +11,7 @@ gulp.task('serve', function() {
     notify: false,
     open: false,
     logPrefix: 'APP',
-    files: [source('*'), 'index.html'],
+    files: ['src/*.js', 'index.html'],
     snippetOptions: {
       rule: {
         match: '<span id="browser-sync-binding"></span>',
@@ -32,7 +26,7 @@ gulp.task('serve', function() {
     middleware: [historyApiFallback()]
   });
 
-  gulp.watch(source('*'), browserSync.reload);
+  gulp.watch('src/*.js', browserSync.reload);
   gulp.watch('index.html', browserSync.reload);
 });
 
@@ -41,9 +35,9 @@ gulp.task('serve', function() {
 // Build production files, the default task
 gulp.task('default', function(cb) {
   gulp
-    .src(source('*.js'))
+    .src('src/*.js')
     .pipe(sourcemaps.init())
-    .pipe(babel({ presets: ['minify'] }))
+    .pipe(uglify({ toplevel: true, mangle: true, compress: { passes: 2 } }))
     .pipe(sourcemaps.write('.'))
     .pipe(gulp.dest('.'));
 });

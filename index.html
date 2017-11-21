@@ -11,8 +11,7 @@
 <meta property="og:site_name" content="Slide'm Slide Deck" />
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans+Condensed:700">
-<script type="module" src="src/slidem-deck.js"></script>
-<script type="module" src="src/slidem-basic-slide.js"></script>
+
 
 <style>
   :root {
@@ -28,46 +27,66 @@
 <span id="browser-sync-binding"></span>
 <!-- endbuild -->
 
-<slidem-deck font="Open Sans Condensed" loading>
-  <slidem-basic-slide slide-in background="--primary">
-    <h1 uppercase fit color="black">Slide'm</h1>
-    <p uppercase fit color="white">Presentation web components</p>
+
+<script type="module" src="src/slidem-deck.js"></script>
+<script type="module" src="src/slidem-basic-slide.js"></script>
+<script type="module" src="src/polymer-opening-slide.js"></script>
+
+<slidem-deck transition="slide-in slide-out" font="Open Sans Condensed" loading>
+  <slidem-basic-slide center slide-in background="--primary">
+    <h1 uppercase fit line-height="0.8" color="black"> Slide'm </h1>
+    <p uppercase fit color="white">Presentation Library</p>
     <p uppercase fit color="black">So you can write your decks in html</p>
-    <p uppercase center color="white">
+    <p uppercase center line-height="2.5" color="white">
       <a href="https://github.com/ruphin/slidem">View on GitHub</a>
     </p>
-    <p center line-height="2" color="black">Hit Your Right Arrow To Begin!</p>
+    <p center color="black">Right Arrow or Swipe Left to Begin!</p>
   </slidem-basic-slide>
 
-  <slidem-basic-slide slide-in slide-out background="black">
+  <slidem-basic-slide center fade-in slide-out background="black">
     <div center>
       <img src="/images/what.png">
     </div>
-    <p line-height="2" uppercase fit color="--primary">Wait what?</p>
+    <p line-height="1.3" uppercase fit color="--primary">Wait what?</p>
   </slidem-basic-slide>
 
-  <slidem-basic-slide zoom background="--primary">
+  <slidem-basic-slide center zoom-in zoom-out background="--primary">
     <div center>
       <img src="/images/codeSample.png">
     </div>
   </slidem-basic-slide>
 
-  <slidem-basic-slide slide-in background="--primary">
-    <h1 uppercase fit color="white">Smooth</h1>
-    <p uppercase fit color="black">slide transitions</p>
+  <slidem-basic-slide center slide-in background="--primary">
+    <h1 uppercase fit line-height="1.2" color="black">Smooth transitions</h1>
+    <p uppercase fit color="white">
+      <span> slide </span>
+      <span>fade </span>
+      <span>zoom </span>
+    </p>
   </slidem-basic-slide>
 
-  <slidem-basic-slide slide-in darken-background=".75" background="/images/streetView.jpg">
+  <slidem-basic-slide center slide-in slide-out darken-background=".75" background="/images/streetView.jpg">
     <h1 fit uppercase color="--primary">Full width</h1>
-    <p reveal fit uppercase color="white">Adjustable darkness</p>
-    <p reveal fit uppercase color="--primary">Background imagery</p>
+    <p fit uppercase reveal color="white">Adjustable darkness</p>
+    <p fit uppercase reveal color="--primary">Background imagery</p>
   </slidem-basic-slide>
 
-  <slidem-basic-slide slide-in background="white">
-    <p fit uppercase color="--primary">Style shamelessly copied from</p>
+  <polymer-opening-slide>
+    <h1 slot="title">Flexible Design</h1>
+    <p reveal slot="subtitle">Create or use templates</p>
+    <img slot="logo" src="/images/polymer.png">
+    <img slot="avatar" src="/images/avatar.jpg">
+    <p slot="event">Polymer Summit Copenhagen 2017</p>
+    <p slot="speaker">Goffert van Gool</p>
+    <a slot="email" href="mailto:ruphin@ruphin.net">ruphin@ruphin.net</a>
+    <a slot="twitter" href="https://twitter.com/ruphin_">@ruphin_</a>
+  </polymer-opening-slide>
+
+  <slidem-basic-slide center slide-in background="white">
+    <p fit uppercase color="--primary">Style shamelessly stolen from</p>
     <p fit uppercase color="black" line-height="1.3">
       <a href="http://formidable.com/open-source/spectacle/">Spectacle</a>
     </p>
-    <p reveal center uppercase color="--primary"> with love</p>
+    <p reveal center uppercase font-size="66" color="--primary"> with love</p>
   </slidem-basic-slide>
 </slidem-deck>
