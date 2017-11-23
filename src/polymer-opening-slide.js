@@ -33,6 +33,9 @@ styleNode.appendChild(styleText);
 document.head.appendChild(styleNode);
 
 export class PolymerOpeningSlide extends SlidemSlide {
+  get fonts() {
+    return ['Roboto'];
+  }
   get template() {
     this.content = html`
       <div class="introSlide">

@@ -82,13 +82,13 @@ export class SlidemBasicSlide extends SlidemSlide {
 
   static get observedAttributes() {
     const attrs = super.observedAttributes || [];
-    attrs.push('active');
+    Array.prototype.push.apply(attrs, ['active', 'next']);
     return attrs;
   }
 
   attributeChangedCallback(attr, oldVal, newVal) {
     super.attributeChangedCallback(attr, oldVal, newVal);
-    if (attr === 'active') {
+    if (attr === 'active' || attr === 'next') {
       if (newVal !== null) {
         this.__rescale();
       }
@@ -96,13 +96,15 @@ export class SlidemBasicSlide extends SlidemSlide {
   }
 
   __rescale() {
-    this.textNodes.forEach(textNode => {
-      if (textNode.getAttribute('fit') !== null) {
-        textNode.style.display = 'table';
-        const refFontSize = parseFloat(window.getComputedStyle(textNode, null).getPropertyValue('font-size'));
-        const refWidth = this.$.content.clientWidth;
-        textNode.style.fontSize = `${Math.floor(refFontSize * refWidth / textNode.clientWidth) - 1}px`;
-      }
+    requestAnimationFrame(() => {
+      this.textNodes.forEach(textNode => {
+        if (textNode.getAttribute('fit') !== null) {
+          textNode.style.display = 'table';
+          const refFontSize = parseFloat(window.getComputedStyle(textNode, null).getPropertyValue('font-size'));
+          const refWidth = this.$.content.clientWidth;
+          textNode.style.fontSize = `${Math.floor(refFontSize * refWidth / textNode.clientWidth) - 1}px`;
+        }
+      });
     });
   }
 }

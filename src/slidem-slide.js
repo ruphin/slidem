@@ -20,8 +20,6 @@ const slidemStyle = html`
       justify-content: center;
       align-items: center;
       background-size: cover;
-    }
-    :host([active]) {
       display: flex;
     }
 
@@ -53,19 +51,19 @@ const slidemStyle = html`
       }
     }
 
-    :host([zoom-in].animate-forward.animate-in) #content {
+    :host([zoom-in][active].animate-forward) #content {
       animation-name: zoom-in;
     }
 
-    :host([zoom-in].animate-backward.animate-out) #content {
+    :host([zoom-in][previous].animate-backward) #content {
       animation-name: zoom-out;
     }
 
-    :host([zoom-out].animate-forward.animate-out) #content {
+    :host([zoom-out][previous].animate-forward) #content {
       animation-name: zoom-out;
     }
 
-    :host([zoom-out].animate-backward.animate-in) #content {
+    :host([zoom-out][active].animate-backward) #content {
       animation-name: zoom-in;
     }
 
