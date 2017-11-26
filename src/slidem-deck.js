@@ -15,6 +15,7 @@ const styleText = document.createTextNode(`
     transition: opacity 0.2s;
   }
 
+  /* Keyframes are defined here to patch a scoping bug in Chrome */
   @keyframes slidem-fade-in {
     from {
       opacity: 0;
@@ -91,6 +92,59 @@ export class SlidemDeck extends GluonElement {
         <gluon-keybinding key="ArrowLeft"></gluon-keybinding>
       </div>
       <style>
+        @keyframes slidem-fade-in {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+
+        @keyframes slidem-fade-out {
+          from {
+            opacity: 1;
+          }
+          to {
+            opacity: 0;
+          }
+        }
+
+        @keyframes slidem-slide-in-forward {
+          from {
+            transform: translateX(100vw);
+          }
+          to {
+            transform: translateX(0);
+          }
+        }
+
+        @keyframes slidem-slide-in-backward {
+          from {
+            transform: translateX(0);
+          }
+          to {
+            transform: translateX(100vw);
+          }
+        }
+
+        @keyframes slidem-slide-out-forward {
+          from {
+            transform: translateX(0);
+          }
+          to {
+            transform: translateX(-100vw);
+          }
+        }
+
+        @keyframes slidem-slide-out-backward {
+          from {
+            transform: translateX(-100vw);
+          }
+          to {
+            transform: translateX(0);
+          }
+        }
         :host {
           display: block;
           overflow: hidden;
