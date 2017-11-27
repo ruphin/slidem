@@ -3,6 +3,9 @@ const browserSync = require('browser-sync');
 const sourcemaps = require('gulp-sourcemaps');
 const uglify = require('gulp-uglify-es').default;
 const historyApiFallback = require('connect-history-api-fallback');
+const rollup = require('gulp-rollup');
+const includePaths = require('rollup-plugin-includepaths');
+const rename = require('gulp-rename');
 
 // Watch files for changes & reload
 gulp.task('serve', function() {
@@ -34,10 +37,25 @@ gulp.task('serve', function() {
 
 // Build production files, the default task
 gulp.task('default', function(cb) {
-  gulp
+  return gulp
     .src('src/*.js')
     .pipe(sourcemaps.init())
     .pipe(uglify({ toplevel: true, mangle: true, compress: { passes: 2 } }))
     .pipe(sourcemaps.write('.'))
+    .pipe(gulp.dest('.'));
+});
+
+const includePathOptions = {
+  include: {},
+  paths: ['node_modules/slidem'],
+  external: [],
+  extensions: ['.js']
+};
+
+gulp.task('nomodule', ['default'], () => {
+  return gulp
+    .src(['index.js', 'src/*.js', 'node_modules/fontfaceobserver/*.js', 'node_modules/lit-html/*.js', 'node_modules/gluon*/*.js'])
+    .pipe(rollup({ input: 'index.js', format: 'iife', name: 'Slidem', plugins: [includePaths(includePathOptions)] }))
+    .pipe(rename('index.nomodule.js'))
     .pipe(gulp.dest('.'));
 });

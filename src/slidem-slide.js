@@ -1,11 +1,22 @@
 import { GluonElement, html } from '../gluonjs/gluon.js';
+import { SlidemSlideBase } from './slidem-slide-base.js';
 
 const styleText = document.createTextNode(`
-  /* SLIDEM SLIDE GLOBAL STYLES */
+  /* SLIDEM BASIC SLIDE STYLE */
+  slidem-slide h1,
+  slidem-slide h2,
+  slidem-slide h3,
+  slidem-slide h4,
+  slidem-slide h5,
+  slidem-slide h6,
+  slidem-slide p {
+    margin-top: 0px;
+    margin-bottom: 0px;
+  }
 
-  [reveal] {
-    opacity: 0;
-    transition: opacity 0.2s;
+  slidem-slide a {
+    color: inherit;
+    text-decoration: none;
   }
 `);
 
@@ -13,147 +24,95 @@ const styleNode = document.createElement('style');
 styleNode.appendChild(styleText);
 document.head.appendChild(styleNode);
 
-const slidemStyle = html`
-  <style>
-    :host {
-      overflow: hidden;
-      justify-content: center;
-      align-items: center;
-      background-size: cover;
-      display: flex;
-    }
-
-    :host([zoom-in]) #content, :host([zoom-out]) #content {
-      animation-duration: 0.4s;
-      animation-fill-mode: both;
-      animation-timing-function: ease-in-out;
-    }
-
-    @keyframes zoom-in {
-      from {
-        opacity: 0;
-        transform: scale(0);
-      }
-      to {
-        opacity: 1;
-        transform: scale(var(--slidem-content-scale, 1));
-      }
-    }
-
-    @keyframes zoom-out {
-      from {
-        opacity: 1;
-        transform: scale(var(--slidem-content-scale, 1));
-      }
-      to {
-        opacity: 0;
-        transform: scale(0);
-      }
-    }
-
-    :host([zoom-in][active].animate-forward) #content {
-      animation-name: zoom-in;
-    }
-
-    :host([zoom-in][previous].animate-backward) #content {
-      animation-name: zoom-out;
-    }
-
-    :host([zoom-out][previous].animate-forward) #content {
-      animation-name: zoom-out;
-    }
-
-    :host([zoom-out][active].animate-backward) #content {
-      animation-name: zoom-in;
-    }
-
-    #content {
-      width: var(--slidem-content-width, 1760px);
-      max-height: var(--slidem-content-height, 990px);
-      flex-shrink: 0;
-    }
-
-    :host(:not([center])) #content {
-      height: var(--slidem-content-height, 990px);
-    }
-  </style>
-`;
-
-export class SlidemSlide extends GluonElement {
-  get template() {
-    if (this.getAttribute('fullscreen') !== null || this.constructor.fullscreen) {
-      return html`
-        ${slidemStyle}
-        ${(this.constructor.name !== 'SlidemSlide' && this.content) || html`<slot id="slot"></slot>`}
-      `;
-    } else {
-      return html`
-        ${slidemStyle}
-        <div id="content">
-          ${(this.constructor.name !== 'SlidemSlide' && this.content) || html`<slot id="slot"></slot>`}
-        </div>
-      `;
-    }
-  }
-
+export class SlidemSlide extends SlidemSlideBase {
   connectedCallback() {
     super.connectedCallback();
-    this._steps = Array.from(this.querySelectorAll('[reveal]'));
-    this.steps = this._steps.length;
-    this.__resizeContent();
-    let resizeTimeout;
-    window.addEventListener('resize', () => {
-      window.clearTimeout(resizeTimeout);
-      resizeTimeout = window.setTimeout(() => {
-        this.__resizeContent();
-      }, 200);
+    const background = this.getAttribute('background');
+    if (background) {
+      if (background.match(/^--[a-zA-Z-]*$/)) {
+        this.style.background = `var(${background})`;
+      } else if (background.match(/^http/) || background.match(/^\//)) {
+        const darken = this.getAttribute('darken-background');
+        let image = `url(${background})`;
+        if (darken) {
+          image = `linear-gradient(rgba(0,0,0,${darken}), rgba(0,0,0,${darken})), ${image}`;
+        }
+        this.style.backgroundImage = image;
+      } else {
+        this.style.background = background;
+      }
+    }
+
+    this.textNodes = Array.from(this.querySelectorAll('h1, h2, h3, h4, h5, h6, p, li, span'));
+    this.textNodes.forEach(textNode => {
+      if (textNode.getAttribute('font-size') !== null) {
+        textNode.style.fontSize = textNode.getAttribute('font-size');
+      }
+      if (textNode.getAttribute('bold') !== null) {
+        textNode.style.fontWeight = 'bold';
+      }
+      if (textNode.getAttribute('underline') !== null) {
+        textNode.style.textDecoration = 'underline';
+      }
+      if (textNode.getAttribute('italic') !== null) {
+        textNode.style.fontStyle = 'italic';
+      }
+      if (textNode.getAttribute('uppercase') !== null) {
+        textNode.style.textTransform = 'uppercase';
+      }
+      if (textNode.getAttribute('center') !== null) {
+        textNode.style.textAlign = 'center';
+      }
+      if (textNode.getAttribute('line-height') !== null) {
+        textNode.style.lineHeight = textNode.getAttribute('line-height');
+      }
+      const color = textNode.getAttribute('color');
+      if (color !== null) {
+        if (color.match(/^--[a-zA-Z-]*$/)) {
+          textNode.style.color = `var(${color})`;
+        } else {
+          textNode.style.color = color;
+        }
+      }
+    });
+
+    this.layoutNodes = Array.from(this.querySelectorAll('div'));
+    this.layoutNodes.forEach(layoutNode => {
+      if (layoutNode.getAttribute('center') !== null) {
+        layoutNode.style.display = 'flex';
+        layoutNode.style.justifyContent = 'center';
+        layoutNode.style.alignItems = 'center';
+      }
     });
   }
 
   static get observedAttributes() {
-    return ['step'];
+    const attrs = super.observedAttributes || [];
+    Array.prototype.push.apply(attrs, ['active', 'next']);
+    return attrs;
   }
 
   attributeChangedCallback(attr, oldVal, newVal) {
-    if (attr === 'step') {
-      const step = Number(newVal);
-      if (step > this.steps + 1) {
-        this.setAttribute('step', this.steps + 1);
-        return;
+    super.attributeChangedCallback(attr, oldVal, newVal);
+    if (attr === 'active' || attr === 'next') {
+      if (newVal !== null) {
+        this.__rescale();
       }
-      this.__setStep(step);
     }
   }
 
-  set step(step) {
-    this.setAttribute('step', step);
-  }
-
-  get step() {
-    return Number(this.getAttribute('step')) || 1;
-  }
-
-  __setStep(newStep) {
-    this._steps.forEach((step, i) => {
-      if (i < newStep - 1) {
-        step.style.opacity = 1;
-      } else {
-        step.style.opacity = 0;
-      }
+  __rescale() {
+    requestAnimationFrame(() => {
+      this.textNodes.forEach(textNode => {
+        if (textNode.getAttribute('fit') !== null) {
+          textNode.style.display = 'table';
+          textNode.style.whiteSpace = 'nowrap';
+          const refFontSize = parseFloat(window.getComputedStyle(textNode, null).getPropertyValue('font-size'));
+          const refWidth = this.$.content.clientWidth;
+          textNode.style.fontSize = `${Math.floor(refFontSize * refWidth / textNode.clientWidth)}px`;
+        }
+      });
     });
-  }
-
-  __resizeContent() {
-    const width = Number((window.getComputedStyle(document.documentElement).getPropertyValue('--slidem-content-width') || '1760px').slice(0, -2));
-    const height = Number((window.getComputedStyle(document.documentElement).getPropertyValue('--slidem-content-height') || '990px').slice(0, -2));
-    const scale = Math.min(window.innerHeight / height, window.innerWidth / 1.1 / width);
-    if (scale < 1) {
-      document.documentElement.style.setProperty('--slidem-content-scale', scale);
-      this.$.content.style.transform = `scale(${scale})`;
-    } else {
-      document.documentElement.style.setProperty('--slidem-content-scale', 1);
-      this.$.content.style.transform = `scale(1)`;
-    }
   }
 }
 

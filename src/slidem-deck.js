@@ -2,13 +2,14 @@ import { GluonElement, html } from '../gluonjs/gluon.js';
 import { onRouteChange, currentPath, currentQuery, currentHash } from '../gluon-router/gluon-router.js';
 
 import '../fontfaceobserver/fontfaceobserver.standalone.js';
-import '../gluon-keybinding/gluon-keybinding.js';
+import { GluonKeybinding } from '../gluon-keybinding/gluon-keybinding.js';
 
 const styleText = document.createTextNode(`
   /* SLIDEM GLOBAL STYLES */
   body {
     margin: 0;
   }
+
 
   [reveal] {
     opacity: 0;
@@ -78,7 +79,9 @@ document.head.appendChild(styleNode);
 export class SlidemDeck extends GluonElement {
   get template() {
     return html`
-      <slot id="slides"></slot>
+      <div class="slides">
+        <slot id="slides"></slot>
+      </div>
       <div id="progress"></div>
       <div id="timer"></div>
       <gluon-keybinding id="timerToggle" key="t"></gluon-keybinding>
@@ -158,7 +161,7 @@ export class SlidemDeck extends GluonElement {
           line-height: 1;
         }
 
-        ::slotted(*) {
+        .slides ::slotted(*) {
           position: absolute;
           top: 0;
           right: 0;
@@ -169,11 +172,11 @@ export class SlidemDeck extends GluonElement {
           animation-timing-function: ease-in-out;
         }
 
-        ::slotted(:not([active]):not([previous]):not([next])) {
+        .slides ::slotted(:not([active]):not([previous]):not([next])) {
           display: none;
         }
 
-        :host(:not([presenter])) ::slotted([next]:not([previous])) {
+        :host(:not([presenter])) .slides ::slotted([next]:not([previous])) {
           display: none;
         }
 
@@ -252,50 +255,50 @@ export class SlidemDeck extends GluonElement {
           left: calc(60.5% - 20px);
           border: 2px solid white;
         }
-        :host([presenter]) ::slotted(*) {
+        :host([presenter]) .slides ::slotted(*) {
           animation: none !important; /* Block user-configured animations */
         }
-        :host([presenter]) ::slotted([previous]:not([next])) {
+        :host([presenter]) .slides ::slotted([previous]:not([next])) {
           display: none;
         }
-        :host([presenter]) ::slotted([active]) {
+        :host([presenter]) .slides ::slotted([active]) {
           transform: translate(-20%, 0) scale(0.5) !important; /* Force presenter layout */
         }
-        :host([presenter]) ::slotted([next]) {
+        :host([presenter]) .slides ::slotted([next]) {
           transform: translate(28%, 0) scale(0.35) !important; /* Force presenter layout */
         }
 
-        ::slotted([active]) {
+        .slides ::slotted([active]) {
           z-index: 2;
         }
-        ::slotted([previous]) {
+        .slides ::slotted([previous]) {
           z-index: 0;
         }
-        ::slotted([fade-in][active].animate-forward) {
+        .slides ::slotted([fade-in][active].animate-forward) {
           animation-name: slidem-fade-in;
         }
-        ::slotted([fade-in][previous].animate-backward) {
+        .slides ::slotted([fade-in][previous].animate-backward) {
           animation-name: slidem-fade-out;
           z-index: 3;
         }
-        ::slotted([fade-out][active].animate-backward) {
+        .slides ::slotted([fade-out][active].animate-backward) {
           animation-name: slidem-fade-in;
         }
-        ::slotted([fade-out][previous].animate-forward) {
+        .slides ::slotted([fade-out][previous].animate-forward) {
           animation-name: slidem-fade-out;
           z-index: 3;
         }
-        ::slotted([slide-in][active].animate-forward) {
+        .slides ::slotted([slide-in][active].animate-forward) {
           animation-name: slidem-slide-in-forward;
         }
-        ::slotted([slide-in][previous].animate-backward) {
+        .slides ::slotted([slide-in][previous].animate-backward) {
           animation-name: slidem-slide-in-backward;
           z-index: 3;
         }
-        ::slotted([slide-out][active].animate-backward) {
+        .slides ::slotted([slide-out][active].animate-backward) {
           animation-name: slidem-slide-out-backward;
         }
-        ::slotted([slide-out][previous].animate-forward) {
+        .slides ::slotted([slide-out][previous].animate-forward) {
           animation-name: slidem-slide-out-forward;
           z-index: 3;
         }

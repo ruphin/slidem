@@ -12,7 +12,6 @@
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans+Condensed:700">
 
-
 <style>
   :root {
     --primary: #FF2A69;
@@ -27,66 +26,80 @@
 <span id="browser-sync-binding"></span>
 <!-- endbuild -->
 
-
-<script type="module" src="src/slidem-deck.js"></script>
-<script type="module" src="src/slidem-basic-slide.js"></script>
-<script type="module" src="src/polymer-opening-slide.js"></script>
+<script src="/node_modules/@webcomponents/webcomponentsjs/webcomponents-hi-sd-ce.js"></script>
+<script type="module" src="index.js"></script>
+<script nomodule src="index.nomodule.js"></script>
 
 <slidem-deck transition="slide-in slide-out" font="Open Sans Condensed" loading>
-  <slidem-basic-slide center slide-in background="--primary">
+  <slidem-slide center slide-in background="--primary">
     <h1 uppercase fit line-height="0.8" color="black"> Slide'm </h1>
     <p uppercase fit color="black">Presentation Library</p>
     <p uppercase fit color="white">So you can write your decks in html</p>
-    <p uppercase center line-height="2.5" color="black">
+    <p uppercase center font-size="78px" line-height="1.8" color="black">
       <a href="https://github.com/ruphin/slidem">View on GitHub</a>
     </p>
-    <p center color="white">Right Arrow or Swipe Left to Begin!</p>
-  </slidem-basic-slide>
+    <p center font-size="78px" color="white">Right Arrow or Swipe Left to Begin!</p>
+  </slidem-slide>
 
-  <slidem-basic-slide center fade-in slide-out background="black">
+  <slidem-slide center slide-in slide-out background="black">
     <div center>
       <img src="/images/what.png">
     </div>
     <p line-height="1.3" uppercase fit color="--primary">Wait what?</p>
-  </slidem-basic-slide>
+  </slidem-slide>
 
-  <slidem-basic-slide center zoom-in zoom-out background="--primary">
+  <slidem-slide center zoom-in zoom-out background="--primary">
     <div center>
       <img src="/images/codeSample.png">
     </div>
-  </slidem-basic-slide>
+  </slidem-slide>
 
-  <slidem-basic-slide center slide-in background="--primary">
-    <h1 uppercase fit line-height="1.2" color="black">Smooth transitions</h1>
-    <p uppercase fit color="white">
-      <span> slide </span>
-      <span>fade </span>
-      <span>zoom </span>
-    </p>
-  </slidem-basic-slide>
+  <slidem-slide center fade-in background="--primary">
+    <h2 fit uppercase fitcenter color="black">Smooth transitions</h2>
+    <p center uppercase font-size="168px" line-height="1.7" color="white">slide - fade - zoom</p>
+  </slidem-slide>
 
-  <slidem-basic-slide center slide-in slide-out darken-background=".75" background="/images/streetView.jpg">
-    <h1 fit uppercase color="--primary">Full width</h1>
+  <slidem-slide center slide-in slide-out darken-background=".75" background="/images/streetView.jpg">
+    <p fit uppercase color="--primary">Full width</p>
     <p fit uppercase reveal color="white">Adjustable darkness</p>
     <p fit uppercase reveal color="--primary">Background imagery</p>
-  </slidem-basic-slide>
+  </slidem-slide>
 
-  <polymer-opening-slide>
-    <h1 slot="title">Flexible Design</h1>
-    <p reveal slot="subtitle">Create or use templates</p>
+  <slidem-polymersummit-slide>
+    <h2 slot="title">Custom Styling</h2>
+    <p reveal slot="subtitle">Design with HTML and CSS</p>
     <img slot="logo" src="/images/polymer.png">
     <img slot="avatar" src="/images/avatar.jpg">
     <p slot="event">Polymer Summit Copenhagen 2017</p>
     <p slot="speaker">Goffert van Gool</p>
     <a slot="email" href="mailto:ruphin@ruphin.net">ruphin@ruphin.net</a>
     <a slot="twitter" href="https://twitter.com/ruphin_">@ruphin_</a>
-  </polymer-opening-slide>
+  </slidem-polymersummit-slide>
 
-  <slidem-basic-slide center slide-in background="white">
-    <p fit uppercase color="--primary">Style shamelessly stolen from</p>
-    <p fit uppercase color="black" line-height="1.3">
-      <a href="http://formidable.com/open-source/spectacle/">Spectacle</a>
+  <slidem-slide center slide-in darken-background=".8" background="/images/presenter.jpg">
+    <h2 uppercase font-size="158px" line-height="1.8" color="white">Other features include</h2>
+    <p uppercase font-size="118px" line-height="1.3" color="white">- Presenter Mode (press p)</p>
+    <p uppercase font-size="118px" line-height="1.3" color="white">- Fullscreen video</p>
+    <p uppercase font-size="118px" line-height="1.3" color="white">- Inline text styling</p>
+  </slidem-slide>
+  <slidem-video-slide center fade-in slide-out fullscreen muted video="/videos/presenter.mp4"></slidem-video-slide>
+
+  <slidem-slide center background="white">
+    <p fit color="--primary" uppercase>Install
+      <span color="black">
+        <a href="https://www.npmjs.com/package/slidem">With NPM</a>
+      </span>
     </p>
-    <p reveal center uppercase font-size="66" color="--primary"> with love</p>
-  </slidem-basic-slide>
+    <p fit color="--primary" uppercase>Check
+      <span color="black">
+        <a href="https://github.com/ruphin/slidem">The source</a>
+      </span>
+    </p>
+    <p fit color="--primary" uppercase>Read
+      <span color="black">
+        <a href="/docs">The Docs</a>
+      </span>
+    </p>
+    <p style="text-align: right;">(soon)</p>
+  </slidem-slide>
 </slidem-deck>
