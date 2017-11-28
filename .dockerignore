@@ -4,3 +4,4 @@ node_modules
 !node_modules/gluon-router
 !node_modules/gluon-keybinding
 !node_modules/fontfaceobserver
+!node_modules/@webcomponents/webcomponentsjs
