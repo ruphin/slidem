@@ -36,7 +36,7 @@ gulp.task('serve', function() {
 // TODO: Prefix and minify the inlined CSS
 
 // Build production files, the default task
-gulp.task('default', function(cb) {
+gulp.task('default', ['nomodule'], function(cb) {
   return gulp
     .src('src/*.js')
     .pipe(sourcemaps.init())
@@ -52,7 +52,7 @@ const includePathOptions = {
   extensions: ['.js']
 };
 
-gulp.task('nomodule', ['default'], () => {
+gulp.task('nomodule', () => {
   return gulp
     .src(['index.js', 'src/*.js', 'node_modules/fontfaceobserver/*.js', 'node_modules/lit-html/*.js', 'node_modules/gluon*/*.js'])
     .pipe(rollup({ input: 'index.js', format: 'iife', name: 'Slidem', plugins: [includePaths(includePathOptions)] }))

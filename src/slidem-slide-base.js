@@ -20,6 +20,7 @@ const slidemStyle = html`
       justify-content: center;
       align-items: center;
       background-size: cover;
+      background-position: center;
       display: flex;
     }
 

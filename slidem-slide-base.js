@@ -5,6 +5,7 @@ import{GluonElement as t,html as e}from"../gluonjs/gluon.js";const n=document.cr
       justify-content: center;
       align-items: center;
       background-size: cover;
+      background-position: center;
       display: flex;
     }
 
