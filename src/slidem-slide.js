@@ -31,9 +31,9 @@ export class SlidemSlide extends SlidemSlideBase {
     if (background) {
       if (background.match(/^--[a-zA-Z-]*$/)) {
         this.style.background = `var(${background})`;
-      } else if (background.match(/^http/) || background.match(/^\//)) {
-        const darken = this.getAttribute('darken-background');
+      } else if (background.match(/^(http|\/|\.)/)) {
         let image = `url(${background})`;
+        const darken = this.getAttribute('darken-background');
         if (darken) {
           image = `linear-gradient(rgba(0,0,0,${darken}), rgba(0,0,0,${darken})), ${image}`;
         }
