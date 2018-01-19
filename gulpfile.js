@@ -54,7 +54,14 @@ const includePathOptions = {
 
 gulp.task('nomodule', () => {
   return gulp
-    .src(['index.js', 'src/*.js', 'node_modules/fontfaceobserver/*.js', 'node_modules/lit-html/*.js', 'node_modules/gluon*/*.js'])
+    .src([
+      'index.js',
+      'src/*.js',
+      'node_modules/fontfaceobserver/*.js',
+      'node_modules/lit-html/*.js',
+      'node_modules/lit-html/lib/*.js',
+      'node_modules/gluon*/*.js'
+    ])
     .pipe(rollup({ input: 'index.js', format: 'iife', name: 'Slidem', plugins: [includePaths(includePathOptions)] }))
     .pipe(rename('index.nomodule.js'))
     .pipe(gulp.dest('.'));

@@ -20,7 +20,7 @@
     "fontfaceobserver": "^2.0.13",
     "gluon-keybinding": "^0.0.2",
     "gluon-router": "^0.0.3",
-    "gluonjs": "^2.0.2"
+    "gluonjs": "^2.1.0"
   },
   "scripts": {
     "build": "gulp",

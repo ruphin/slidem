@@ -1053,11 +1053,11 @@ gluonjs@^2.0.0-preview.4:
   dependencies:
     lit-html "^0.6.0"
 
-gluonjs@^2.0.2:
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/gluonjs/-/gluonjs-2.0.2.tgz#8b0228a4c2ca9b2c2dd35adb042bb9aaa4c80495"
+gluonjs@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/gluonjs/-/gluonjs-2.1.0.tgz#facd3d89e0f27693bcaa8acc520f8736160ed680"
   dependencies:
-    lit-html "^0.6.0"
+    lit-html "^0.8.0"
 
 graceful-fs@4.X, graceful-fs@^4.1.2, graceful-fs@^4.1.6:
   version "4.1.11"
@@ -1621,6 +1621,10 @@ limiter@^1.0.5:
 lit-html@^0.6.0:
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/lit-html/-/lit-html-0.6.0.tgz#3d756ea67f6d0cac1c0e78ef9e52d4335198b728"
+
+lit-html@^0.8.0:
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/lit-html/-/lit-html-0.8.0.tgz#4de0d1899585a3685870ffb919fedd61ebc79f03"
 
 load-json-file@^1.0.0:
   version "1.1.0"
