@@ -22,13 +22,19 @@
   }
 </style>
 
-<!-- build:remove -->
-<span id="browser-sync-binding"></span>
-<!-- endbuild -->
 
-<script src="/node_modules/@webcomponents/webcomponentsjs/webcomponents-hi-sd-ce.js"></script>
-<script type="module" src="index.js"></script>
-<script nomodule src="index.nomodule.js"></script>
+<!-- Always load the Webcomponents Polyfill to be sure (no-op on browsers that have support) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/1.2.0/webcomponents-lite.js"></script>
+
+<!-- This loads the bundle on Chrome, Edge, and Safari -->
+<script type="module" src="/index.js"></script>
+
+<!-- This loads the bundle on other browsers (Firefox and IE11) -->
+<script nomodule src="https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/1.2.0/custom-elements-es5-adapter.js"></script>
+<script nomodule src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.26.0/polyfill.min.js"></script>
+<!-- Take a look at rollup.config.js to see how to build this guy -->
+<script nomodule src="./index.nomodule.js"></script>
+
 
 <slidem-deck transition="slide-in slide-out" font="Open Sans Condensed" loading>
   <slidem-slide center slide-in background="--primary">
@@ -103,3 +109,23 @@
     <p style="text-align: right;">(soon)</p>
   </slidem-slide>
 </slidem-deck>
+
+
+<!-- 
+  Fancy alternative UMD loading technique that works Anywhere™ (except on IE11)
+  These scripts must be placed at the bottom of the page
+-->
+
+<!--
+  <script src="https://unpkg.com/@webcomponents/webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="https://unpkg.com/gluonjs/gluon.umd.js"></script>
+  <script src="https://unpkg.com/slidem/slidem-slide.umd.js"></script>
+  <script src="https://unpkg.com/slidem/slidem-deck.umd.js"></script>
+  <script src="https://unpkg.com/slidem/slidem-video-slide.umd.js"></script>
+  <script src="https://unpkg.com/slidem/slidem-polymersummit-slide.umd.js"></script> 
+-->
+
+<!-- 
+  When using the UMD loader, you must include the gluonjs module and the webcomponents polyfill before any slidem modules
+  You can pick and mix any slidem modules you like 
+-->

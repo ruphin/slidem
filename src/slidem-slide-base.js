@@ -157,5 +157,3 @@ export class SlidemSlideBase extends GluonElement {
     }
   }
 }
-
-customElements.define(SlidemSlideBase.is, SlidemSlideBase);

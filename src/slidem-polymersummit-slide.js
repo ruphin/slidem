@@ -2,7 +2,7 @@ import { GluonElement, html } from '../gluonjs/gluon.js';
 import { SlidemSlideBase } from './slidem-slide-base.js';
 
 const styleText = document.createTextNode(`
-  /* POLYMER OPENING SLIDE GLOBAL STYLES */
+  /* POLYMER SUMMIT SLIDE GLOBAL STYLES */
   @font-face {
     font-family: 'Roboto';
     font-style: normal;
