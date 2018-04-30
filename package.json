@@ -16,7 +16,7 @@
     "build": "cp src/*.js ./ && rollup -c",
     "dev": "browser-sync start --config browsersync.config.js",
     "release": "np",
-    "test": "mocha"
+    "test": "echo 'No tests!'"
   },
   "dependencies": {
     "fontfaceobserver": "^2.0.13",
