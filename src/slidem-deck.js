@@ -1,8 +1,8 @@
-import { GluonElement, html } from '../gluonjs/gluon.js';
-import { onRouteChange, currentPath, currentQuery, currentHash } from '../gluon-router/gluon-router.js';
+import { GluonElement, html } from '../@gluon/gluon/gluon.js';
+import { onRouteChange, currentPath, currentQuery, currentHash } from '../@gluon/router/gluon-router.js';
 
 import '../fontfaceobserver/fontfaceobserver.standalone.js';
-import '../gluon-keybinding/gluon-keybinding.js';
+import '../@gluon/keybinding/gluon-keybinding.js';
 
 const styleText = document.createTextNode(`
   /* SLIDEM GLOBAL STYLES */
@@ -89,11 +89,13 @@ export class SlidemDeck extends GluonElement {
       <div id="forward">
         <gluon-keybinding key="PageDown"></gluon-keybinding>
         <gluon-keybinding key="ArrowRight"></gluon-keybinding>
+        <gluon-keybinding key="Right"></gluon-keybinding>
         <slot name="forward"></slot>
       </div>
       <div id="backward">
         <gluon-keybinding key="PageUp"></gluon-keybinding>
         <gluon-keybinding key="ArrowLeft"></gluon-keybinding>
+        <gluon-keybinding key="Left"></gluon-keybinding>
         <slot name="backward"></slot>
       </div>
       <style>

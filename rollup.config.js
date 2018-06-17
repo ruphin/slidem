@@ -1,6 +1,5 @@
 import filesize from 'rollup-plugin-filesize';
 import uglify from 'rollup-plugin-uglify';
-import { uglifier } from 'uglify-es';
 import babel from 'rollup-plugin-babel';
 import includePaths from 'rollup-plugin-includepaths';
 import * as path from 'path';
@@ -27,7 +26,13 @@ function getConfig({ input, dest, format, uglified = true, transpiled = false, b
           plugins: ['external-helpers']
         }),
       uglified &&
-        uglify({ warnings: true, keep_fnames: true, sourceMap: true, compress: { passes: 2 }, mangle: { properties: false, keep_fnames: true } }, uglifier),
+        uglify({
+          warnings: true,
+          keep_fnames: true,
+          sourceMap: true,
+          compress: { passes: 2 },
+          mangle: { properties: false, keep_fnames: true }
+        }),
       filesize()
     ].filter(Boolean)
   };
@@ -46,7 +51,13 @@ const demo = ({ uglified = false } = {}) => {
         plugins: ['external-helpers']
       }),
       uglified &&
-        uglify({ warnings: true, keep_fnames: true, sourceMap: true, compress: { passes: 2 }, mangle: { properties: false, keep_fnames: true } }, uglifier),
+        uglify({
+          warnings: true,
+          toplevel: true,
+          sourceMap: true,
+          compress: { passes: 2 },
+          mangle: { properties: false, keep_fnames: true }
+        }),
       filesize()
     ].filter(Boolean)
   };
@@ -58,7 +69,7 @@ const config = [
   getConfig({ input: './src/slidem-slide.js', dest: 'slidem-slide.umd.js', format: 'umd' }),
   getConfig({ input: './src/slidem-video-slide.js', dest: 'slidem-video-slide.umd.js', format: 'umd' }),
   getConfig({ input: './src/slidem-polymersummit-slide.js', dest: 'slidem-polymersummit-slide.umd.js', format: 'umd' }),
-  demo({ uglified: false })
+  demo({ uglified: true })
 ];
 
 export default config;

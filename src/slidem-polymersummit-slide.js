@@ -1,4 +1,4 @@
-import { GluonElement, html } from '../gluonjs/gluon.js';
+import { html } from '../@gluon/gluon/gluon.js';
 import { SlidemSlideBase } from './slidem-slide-base.js';
 
 const styleText = document.createTextNode(`

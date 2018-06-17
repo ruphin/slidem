@@ -13,7 +13,7 @@ module.exports = {
     }
   },
   server: {
-    baseDir: ['demo', '.', 'node_modules']
+    baseDir: ['demo', '.', 'node_modules/@gluon', 'node_modules']
   },
   files: ['demo/*.html', 'demo/*.js']
 };

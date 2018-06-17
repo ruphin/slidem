@@ -1,4 +1,3 @@
-import { GluonElement, html } from '../gluonjs/gluon.js';
 import { SlidemSlideBase } from './slidem-slide-base.js';
 
 const styleText = document.createTextNode(`
@@ -109,7 +108,7 @@ export class SlidemSlide extends SlidemSlideBase {
           textNode.style.whiteSpace = 'nowrap';
           const refFontSize = parseFloat(window.getComputedStyle(textNode, null).getPropertyValue('font-size'));
           const refWidth = this.$.content.clientWidth;
-          textNode.style.fontSize = `${Math.floor(refFontSize * refWidth / textNode.clientWidth)}px`;
+          textNode.style.fontSize = `${Math.floor((refFontSize * refWidth) / textNode.clientWidth)}px`;
         }
       });
     });

@@ -22,15 +22,14 @@
   }
 </style>
 
-
-<!-- Always load the Webcomponents Polyfill to be sure (no-op on browsers that have support) -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/1.2.0/webcomponents-lite.js"></script>
-
-<!-- This loads the bundle on Chrome, Edge, and Safari -->
+<!-- This loads the app as a module on Chrome, Edge, Firefox, and Safari -->
+<!-- Modules are always nonblocking, and they load after regular scripts, so we can put them first -->
 <script type="module" src="/index.js"></script>
 
-<!-- This loads the bundle on other browsers (Firefox and IE11) -->
-<script nomodule src="https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/1.2.0/custom-elements-es5-adapter.js"></script>
+<!-- Always load the Webcomponents Polyfill (no-op on browsers that have support) -->
+<script src="/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+
+<!-- This loads the app on IE11 -->
 <script nomodule src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.26.0/polyfill.min.js"></script>
 <!-- Take a look at rollup.config.js to see how to build this guy -->
 <script nomodule src="./index.nomodule.js"></script>
@@ -109,23 +108,3 @@
     <p style="text-align: right;">(soon)</p>
   </slidem-slide>
 </slidem-deck>
-
-
-<!-- 
-  Fancy alternative UMD loading technique that works Anywhere™ (except on IE11)
-  These scripts must be placed at the bottom of the page
--->
-
-<!--
-  <script src="https://unpkg.com/@webcomponents/webcomponentsjs/webcomponents-lite.js"></script>
-  <script src="https://unpkg.com/gluonjs/gluon.umd.js"></script>
-  <script src="https://unpkg.com/slidem/slidem-slide.umd.js"></script>
-  <script src="https://unpkg.com/slidem/slidem-deck.umd.js"></script>
-  <script src="https://unpkg.com/slidem/slidem-video-slide.umd.js"></script>
-  <script src="https://unpkg.com/slidem/slidem-polymersummit-slide.umd.js"></script> 
--->
-
-<!-- 
-  When using the UMD loader, you must include the gluonjs module and the webcomponents polyfill before any slidem modules
-  You can pick and mix any slidem modules you like 
--->
