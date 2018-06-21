@@ -12,6 +12,16 @@
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans+Condensed:700">
 
+<!-- This loads the app on Chrome, Edge, Firefox, and Safari -->
+<!-- Modules are always nonblocking, and they load after regular scripts, so we can put them first -->
+<script type="module" src="/index.js"></script>
+
+<!-- Load polyfills for IE11 -->
+<script nomodule src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.26.0/polyfill.min.js"></script>
+
+<!-- Webcomponents Polyfill (no-op on browsers that have support) -->
+<script src="/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+
 <style>
   :root {
     --primary: #FF2A69;
@@ -22,18 +32,17 @@
   }
 </style>
 
-<!-- This loads the app as a module on Chrome, Edge, Firefox, and Safari -->
-<!-- Modules are always nonblocking, and they load after regular scripts, so we can put them first -->
-<script type="module" src="/index.js"></script>
+<script>
+  // IE11 workaround
+  if (window.ShadyCSS) {
+    window.ShadyCSS.variables = {
+      '--primary': '#FF2A69'
+    }
+  }
+</script>
 
-<!-- Always load the Webcomponents Polyfill (no-op on browsers that have support) -->
-<script src="/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
-
-<!-- This loads the app on IE11 -->
-<script nomodule src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.26.0/polyfill.min.js"></script>
-<!-- Take a look at rollup.config.js to see how to build this guy -->
+<!-- Load the app on IE11 -->
 <script nomodule src="./index.nomodule.js"></script>
-
 
 <slidem-deck transition="slide-in slide-out" font="Open Sans Condensed" loading>
   <slidem-slide center slide-in background="--primary">

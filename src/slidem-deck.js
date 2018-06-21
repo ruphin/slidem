@@ -10,7 +10,6 @@ const styleText = document.createTextNode(`
     margin: 0;
   }
 
-
   [reveal] {
     opacity: 0;
     transition: opacity 0.2s;
@@ -324,7 +323,11 @@ export class SlidemDeck extends GluonElement {
 
   connectedCallback() {
     super.connectedCallback();
+
+    // Initialize presenter mode based on the '?presenter' query being present
     this.presenter = currentQuery() === 'presenter';
+
+    // Enable presenter mode toggle
     this.$.presenterToggle.addEventListener('click', () => {
       this.presenter = !this.presenter;
       changeLocation({ query: (this.presenter && 'presenter') || '', hash: currentHash() });
@@ -351,6 +354,11 @@ export class SlidemDeck extends GluonElement {
       this.$.progress.appendChild(document.createElement('div'));
     });
 
+    /**
+     * Routing system
+     *
+     * Handles route changes and displays / animates the slides by changing classes and attributes
+     */
     onRouteChange(() => {
       this.slides[this.currentSlide].step = this.currentStep + 1;
       this.slides[this.currentSlide].setAttribute('active', '');
@@ -405,6 +413,11 @@ export class SlidemDeck extends GluonElement {
       localStorage.setItem('location', currentHash());
     };
 
+    /**
+     * Navigation handlers
+     *
+     * The 'forward' and 'backward' elements handle click events and navigate to the next/previous step/slide
+     */
     this.$.forward.onclick = () => {
       if (this.slides[this.currentSlide].steps && this.slides[this.currentSlide].step <= this.slides[this.currentSlide].steps) {
         changeLocation({ hash: `slide-${this.currentSlide + 1}/step-${this.slides[this.currentSlide].step + 1}` });
@@ -421,7 +434,12 @@ export class SlidemDeck extends GluonElement {
       }
     };
 
-    // Swipe gesture support
+    /**
+     * Gesture navigation support system
+     *
+     * Allows swiping gestures to navigate between slides
+     * Listens to the 'touchstart' and 'touchend' events to determine if a swipe occurred
+     */
     let touchX;
     let touchY;
     document.addEventListener(
@@ -448,29 +466,63 @@ export class SlidemDeck extends GluonElement {
       false
     );
 
-    // FUOC prevention
-    this.removeAttribute('loading');
-
-    // Trigger the router to display the first slide
+    /**
+     * Initialization function
+     *
+     * Displays the application
+     */
     const init = () => {
-      window.requestAnimationFrame(() => window.dispatchEvent(new Event('location-changed')));
+      this.removeAttribute('loading');
+      // Trigger the router to display the current page
+      window.dispatchEvent(new Event('location-changed'));
     };
 
+    /**
+     * Font loading subsystem.
+     *
+     * It checks the 'font' attribute defined on slidem-deck, and the 'fonts' properties on
+     * all children that are custom elements (which could be custom slide elements).
+     *
+     * It feeds all these fonts to FontFaceObsever, and calls the 'init' function once all fonts
+     * are loaded, or after a 2 second timeout.
+     */
     const font = this.getAttribute('font');
     if (font) {
       this.style.fontFamily = font;
     }
 
-    // Trigger the init after all fonts are loaded or after 3 sec timeout.
-    Promise.all(
-      this.slides
-        .filter(slide => slide.fonts)
-        .map(slide => slide.fonts)
-        .reduce((fonts, slideFonts) => fonts.concat(slideFonts), (font && [font]) || [])
-        .map(font => new FontFaceObserver(font).load())
-    ).then(init, init);
+    // Promise that rejects after two seconds
+    let timeOut = new Promise((_, reject) => {
+      let wait = setTimeout(() => {
+        clearTimeout(wait);
+        reject('Font loading timeout');
+      }, 2000);
+    });
 
-    // Shared navigation between browser windows
+    // Wait until all child elements that are custom elements are registered in the customElements registry, or the timeOut happens
+    Promise.race([Promise.all(this.slides.map(slide => slide.tagName.includes('-') && customElements.whenDefined(slide.tagName.toLowerCase()))), timeOut])
+      // Then feed all the 'fonts'  defined in those elements and the font in the slidem-deck to FontFaceObserver
+      .then(() =>
+        Promise.race([
+          Promise.all(
+            this.slides
+              .filter(slide => slide.fonts)
+              .map(slide => slide.fonts)
+              .reduce((fonts, slideFonts) => fonts.concat(slideFonts), (font && [font]) || [])
+              .map(font => new FontFaceObserver(font).load())
+          ),
+          timeOut
+        ])
+      )
+      // Once FontFaceObserver for all fonts is complete or the timeout happens, call init()
+      .then(init, () => console.warn('Failed to initialize fonts') || init());
+
+    /**
+     * Shared navigation between browser windows
+     *
+     * Uses the browser localstorage feature to listen to changes in 'location' on any other open browser window,
+     * and matches that location in this instance
+     */
     window.addEventListener('storage', e => {
       if (e.key === 'location') {
         if (currentHash() !== e.newValue) {

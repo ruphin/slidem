@@ -1,4 +1,4 @@
-import '../slidem-deck.js';
-import '../slidem-slide.js';
-import '../slidem-polymersummit-slide.js';
-import '../slidem-video-slide.js';
+import '../src/slidem-deck.js';
+import '../src/slidem-slide.js';
+import '../src/slidem-polymersummit-slide.js';
+import '../src/slidem-video-slide.js';
