@@ -147,7 +147,7 @@ export class SlidemSlideBase extends GluonElement {
   __resizeContent() {
     const width = Number((window.getComputedStyle(document.documentElement).getPropertyValue('--slidem-content-width') || '1760px').slice(0, -2));
     const height = Number((window.getComputedStyle(document.documentElement).getPropertyValue('--slidem-content-height') || '990px').slice(0, -2));
-    const scale = Math.min(window.innerHeight / height, window.innerWidth / 1.1 / width);
+    const scale = Math.min(window.innerHeight / 1.09 / height, window.innerWidth / 1.09 / width);
     if (scale < 1) {
       document.documentElement.style.setProperty('--slidem-content-scale', scale);
       this.$.content && (this.$.content.style.transform = `scale(${scale})`);
