@@ -30,7 +30,7 @@ export class SlidemSlide extends SlidemSlideBase {
     if (background) {
       if (background.match(/^--[a-zA-Z-]*$/)) {
         // Workaround for IE11 lacking CSS variables
-        if (window.ShadyCSS && window.shadyCSS.variables) {
+        if (window.ShadyCSS && window.ShadyCSS.variables) {
           this.style.background = window.ShadyCSS.variables[background];
         } else {
           this.style.background = `var(${background})`;
@@ -74,7 +74,7 @@ export class SlidemSlide extends SlidemSlideBase {
       if (color !== null) {
         if (color.match(/^--[a-zA-Z-]*$/)) {
           // Workaround for IE11 lacking CSS variables
-          if (window.ShadyCSS && window.shadyCSS.variables) {
+          if (window.ShadyCSS && window.ShadyCSS.variables) {
             textNode.style.color = window.ShadyCSS.variables[color];
           } else {
             textNode.style.color = `var(${color})`;
