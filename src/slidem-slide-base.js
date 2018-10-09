@@ -16,12 +16,12 @@ document.head.appendChild(styleNode);
 const slidemStyle = html`
   <style>
     :host {
+      display: flex;
+      flex-direction: row;
       overflow: hidden;
-      justify-content: center;
       align-items: center;
       background-size: cover;
       background-position: center;
-      display: flex;
     }
 
     :host([zoom-in]) #content, :host([zoom-out]) #content {
@@ -68,6 +68,13 @@ const slidemStyle = html`
       animation-name: zoom-in;
     }
 
+    #iefix {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
     #content {
       width: var(--slidem-content-width, 1760px);
       max-height: var(--slidem-content-height, 990px);
@@ -90,8 +97,10 @@ export class SlidemSlideBase extends GluonElement {
     } else {
       return html`
         ${slidemStyle}
-        <div id="content">
-          ${(this.constructor.name !== 'SlidemSlide' && this.content) || html`<slot id="slot"></slot>`}
+        <div id="iefix">
+          <div id="content">
+            ${(this.constructor.name !== 'SlidemSlide' && this.content) || html`<slot id="slot"></slot>`}
+          </div>
         </div>
       `;
     }
@@ -145,8 +154,9 @@ export class SlidemSlideBase extends GluonElement {
   }
 
   __resizeContent() {
-    const width = Number((window.getComputedStyle(document.documentElement).getPropertyValue('--slidem-content-width') || '1760px').slice(0, -2));
-    const height = Number((window.getComputedStyle(document.documentElement).getPropertyValue('--slidem-content-height') || '990px').slice(0, -2));
+    const documentStyle = window.getComputedStyle(document.documentElement);
+    const width = Number((documentStyle.getPropertyValue('--slidem-content-width') || '1760px').slice(0, -2));
+    const height = Number((documentStyle.getPropertyValue('--slidem-content-height') || '990px').slice(0, -2));
     const scale = Math.min(window.innerHeight / 1.09 / height, window.innerWidth / 1.09 / width);
     if (scale < 1) {
       document.documentElement.style.setProperty('--slidem-content-scale', scale);
