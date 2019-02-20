@@ -3,8 +3,6 @@ import cleanup from 'rollup-plugin-cleanup';
 import { terser } from 'rollup-plugin-terser';
 import babel from 'rollup-plugin-babel';
 import includePaths from 'rollup-plugin-includepaths';
-import resolve from 'rollup-plugin-node-resolve';
-import commonjs from 'rollup-plugin-commonjs';
 import * as path from 'path';
 
 const license = min =>
@@ -52,15 +50,9 @@ function getConfig({ input, dest, format, minified = true, transpiled = false, b
     external: [!bundled && path.resolve('node_modules/@gluon/gluon/gluon.js')].filter(Boolean),
     plugins: [
       includePaths(includePathOptions),
-      transpiled && resolve(),
-      transpiled &&
-        commonjs({
-          include: 'node_modules/**'
-        }),
       transpiled &&
         babel({
-          presets: [['env', { modules: false }]],
-          plugins: ['external-helpers']
+          presets: [['@babel/preset-env', { modules: false }]]
         }),
       // Remove duplicate license
       !minified &&
@@ -82,8 +74,7 @@ const demo = {
   plugins: [
     includePaths(includePathOptions),
     babel({
-      presets: [['env', { modules: false }]],
-      plugins: ['external-helpers']
+      presets: [['@babel/preset-env', { modules: false }]]
     }),
     terser({ warnings: true, mangle: { properties: false, keep_fnames: true, module: true } }),
     filesize()
