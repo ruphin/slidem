@@ -97,8 +97,8 @@ export class SlidemSlideBase extends GluonElement {
     } else {
       return html`
         ${slidemStyle}
-        <div id="iefix">
-          <div id="content">
+        <div id="iefix" part="container">
+          <div id="content" part="content">
             ${(this.constructor.name !== 'SlidemSlide' && this.content) || html`<slot id="slot"></slot>`}
           </div>
         </div>
