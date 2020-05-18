@@ -19,23 +19,23 @@
     "test": "echo 'No tests!'"
   },
   "dependencies": {
-    "@gluon/gluon": "2.5.3",
-    "@gluon/keybinding": "1.1.0",
-    "@gluon/router": "1.2.1",
-    "fontfaceobserver": "2.1.0"
+    "@gluon/gluon": "^2.5.3",
+    "@gluon/keybinding": "^1.1.0",
+    "@gluon/router": "^1.2.1",
+    "fontfaceobserver": "^2.1.0"
   },
   "devDependencies": {
-    "@webcomponents/webcomponentsjs": "2.2.7",
-    "@babel/core": "7.3.3",
-    "@babel/preset-env": "7.3.1",
-    "@babel/polyfill": "7.2.5",
-    "browser-sync": "2.26.3",
-    "np": "4.0.2",
-    "rollup": "1.2.2",
-    "rollup-plugin-babel": "4.3.2",
-    "rollup-plugin-cleanup": "3.1.1",
-    "rollup-plugin-filesize": "6.0.1",
-    "rollup-plugin-includepaths": "0.2.3",
-    "rollup-plugin-terser": "4.0.4"
+    "@webcomponents/webcomponentsjs": "^2.4.3",
+    "@babel/core": "^7.9.6",
+    "@babel/preset-env": "^7.9.6",
+    "@babel/polyfill": "^7.8.7",
+    "browser-sync": "^2.26.7",
+    "np": "^6.2.3",
+    "rollup": "^2.10.3",
+    "rollup-plugin-babel": "^4.4.0",
+    "rollup-plugin-cleanup": "^3.1.1",
+    "rollup-plugin-filesize": "^9.0.0",
+    "rollup-plugin-includepaths": "^0.2.3",
+    "rollup-plugin-terser": "^5.3.0"
   }
 }
