@@ -78,11 +78,11 @@ document.head.appendChild(styleNode);
 export class SlidemDeck extends GluonElement {
   get template() {
     return html`
-      <div class="slides">
+      <div class="slides" part="slides">
         <slot id="slides"></slot>
       </div>
-      <div id="progress"></div>
-      <div id="timer"></div>
+      <div id="progress" part="progress"></div>
+      <div id="timer" part="timer"></div>
       <gluon-keybinding id="timerToggle" key="t"></gluon-keybinding>
       <gluon-keybinding id="presenterToggle" key="p"></gluon-keybinding>
       <div id="forward">
