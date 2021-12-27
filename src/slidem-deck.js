@@ -321,6 +321,10 @@ export class SlidemDeck extends GluonElement {
     }
   }
 
+  get activeSlide() {
+    return this.slides?.[this.currentSlide] ?? null;
+  }
+
   connectedCallback() {
     super.connectedCallback();
 
@@ -360,8 +364,8 @@ export class SlidemDeck extends GluonElement {
      * Handles route changes and displays / animates the slides by changing classes and attributes
      */
     onRouteChange(() => {
-      this.slides[this.currentSlide].step = this.currentStep + 1;
-      this.slides[this.currentSlide].setAttribute('active', '');
+      this.activeSlide.step = this.currentStep + 1;
+      this.activeSlide.setAttribute('active', '');
 
       if (this.previousSlide === this.currentSlide) {
         return;
@@ -370,14 +374,14 @@ export class SlidemDeck extends GluonElement {
       if (this.previousSlide !== undefined) {
         if (this.previousSlide < this.currentSlide) {
           this.slides[this.previousSlide].classList.add('animate-forward');
-          this.slides[this.currentSlide].classList.add('animate-forward');
+          this.activeSlide.classList.add('animate-forward');
           this.slides[this.previousSlide].classList.remove('animate-backward');
-          this.slides[this.currentSlide].classList.remove('animate-backward');
+          this.activeSlide.classList.remove('animate-backward');
         } else {
           this.slides[this.previousSlide].classList.add('animate-backward');
-          this.slides[this.currentSlide].classList.add('animate-backward');
+          this.activeSlide.classList.add('animate-backward');
           this.slides[this.previousSlide].classList.remove('animate-forward');
-          this.slides[this.currentSlide].classList.remove('animate-forward');
+          this.activeSlide.classList.remove('animate-forward');
         }
       }
 
@@ -419,16 +423,16 @@ export class SlidemDeck extends GluonElement {
      * The 'forward' and 'backward' elements handle click events and navigate to the next/previous step/slide
      */
     this.$.forward.onclick = () => {
-      if (this.slides[this.currentSlide].steps && this.slides[this.currentSlide].step <= this.slides[this.currentSlide].steps) {
-        changeLocation({ hash: `slide-${this.currentSlide + 1}/step-${this.slides[this.currentSlide].step + 1}` });
+      if (this.activeSlide.steps && this.activeSlide.step <= this.activeSlide.steps) {
+        changeLocation({ hash: `slide-${this.currentSlide + 1}/step-${this.activeSlide.step + 1}` });
       } else if (this.currentSlide < this.slides.length - 1) {
         changeLocation({ hash: `slide-${this.currentSlide + 2}/step-1` });
       }
     };
 
     this.$.backward.onclick = () => {
-      if (this.slides[this.currentSlide].steps && this.slides[this.currentSlide].step > 1) {
-        changeLocation({ hash: `slide-${this.currentSlide + 1}/step-${this.slides[this.currentSlide].step - 1}` });
+      if (this.activeSlide.steps && this.activeSlide.step > 1) {
+        changeLocation({ hash: `slide-${this.currentSlide + 1}/step-${this.activeSlide.step - 1}` });
       } else if (this.currentSlide > 0) {
         changeLocation({ hash: `slide-${this.currentSlide}/step-${(this.slides[this.currentSlide - 1].steps || 0) + 1}` });
       }
