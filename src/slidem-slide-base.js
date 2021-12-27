@@ -121,7 +121,7 @@ export class SlidemSlideBase extends GluonElement {
   }
 
   static get observedAttributes() {
-    return ['step'];
+    return ['auto', 'step'];
   }
 
   attributeChangedCallback(attr, oldVal, newVal) {
@@ -133,6 +133,20 @@ export class SlidemSlideBase extends GluonElement {
       }
       this.__setStep(step);
     }
+  }
+
+  get auto() {
+    if (!this.hasAttribute('auto'))
+      return false;
+    else
+      return parseInt(this.getAttribute('auto')) || 5000;
+  }
+
+  set auto(v) {
+    if (!(typeof v === 'number') || Number.isNaN(v))
+      this.removeAttribute('auto');
+    else
+      this.setAttribute('auto', v.toString())
   }
 
   set step(step) {

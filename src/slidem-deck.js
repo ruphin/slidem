@@ -367,6 +367,16 @@ export class SlidemDeck extends GluonElement {
         return;
       }
 
+      if (this.autoTimer)
+        clearInterval(this.autoTimer);
+
+      if (this.activeSlide.auto) {
+        this.autoTimer = setInterval(() => {
+          const { steps, step } = this.activeSlide;
+          this.activeSlide.step = (step === steps + 1) ? 1 : step + 1;
+        }, this.activeSlide.auto);
+      }
+
       if (this.previousSlide !== undefined) {
         if (this.previousSlide < this.currentSlide) {
           this.slides[this.previousSlide].classList.add('animate-forward');
