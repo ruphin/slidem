@@ -47,7 +47,7 @@ export class SlidemSlide extends SlidemSlideBase {
       }
     }
 
-    this.textNodes = Array.from(this.querySelectorAll('h1, h2, h3, h4, h5, h6, p, li, span'));
+    this.textNodes = Array.from(this.querySelectorAll('h1, h2, h3, h4, h5, h6, p, li, span, em, strong, small'));
     this.textNodes.forEach(textNode => {
       if (textNode.getAttribute('font-size') !== null) {
         textNode.style.fontSize = textNode.getAttribute('font-size');
