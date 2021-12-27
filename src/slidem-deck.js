@@ -323,8 +323,6 @@ export class SlidemDeck extends GluonElement {
 
   connectedCallback() {
     super.connectedCallback();
-    // cache the document title
-    this._originalTitle = document.title;
 
     // Initialize presenter mode based on the '?presenter' query being present
     this.presenter = currentQuery() === 'presenter';
@@ -413,10 +411,6 @@ export class SlidemDeck extends GluonElement {
       path = window.history.pushState({}, '', `${path}${(query && '?' + query) || ''}${(hash && '#' + hash) || ''}`);
       window.dispatchEvent(new Event('location-changed'));
       localStorage.setItem('location', currentHash());
-      if (this.activeSlide.hasAttribute('name'))
-        document.title = this.activeSlide.getAttribute('name') + ' | ' + this._originalTitle;
-      else
-        document.title = this._originalTitle;
     };
 
     /**
