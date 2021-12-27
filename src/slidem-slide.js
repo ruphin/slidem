@@ -103,6 +103,8 @@ export class SlidemSlide extends SlidemSlideBase {
 
   attributeChangedCallback(attr, oldVal, newVal) {
     super.attributeChangedCallback(attr, oldVal, newVal);
+    if (attr === 'active' && newVal != null)
+      this.dispatchEvent('activated');
     if (attr === 'active' || attr === 'next') {
       if (newVal !== null) {
         this.__rescale();
