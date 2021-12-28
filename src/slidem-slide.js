@@ -28,7 +28,7 @@ export class SlidemSlide extends SlidemSlideBase {
     super.connectedCallback();
     const background = this.getAttribute('background');
     if (background) {
-      if (background.match(/^--[a-zA-Z-]*$/)) {
+      if (background.match(/^--/)) {
         // Workaround for IE11 lacking CSS variables
         if (window.ShadyCSS && window.ShadyCSS.variables) {
           this.style.background = window.ShadyCSS.variables[background];
