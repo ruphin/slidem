@@ -25,6 +25,7 @@ const slidemStyle = html`
       flex-direction: row;
       overflow: hidden;
       align-items: center;
+      background: var(--background);
       background-size: cover;
       background-position: center;
     }

@@ -29,12 +29,7 @@ export class SlidemSlide extends SlidemSlideBase {
     const background = this.getAttribute('background');
     if (background) {
       if (background.match(/^--/)) {
-        // Workaround for IE11 lacking CSS variables
-        if (window.ShadyCSS && window.ShadyCSS.variables) {
-          this.style.background = window.ShadyCSS.variables[background];
-        } else {
-          this.style.background = `var(${background})`;
-        }
+        this.style.setProperty('--background', `var(${background})`);
       } else if (background.match(/^(http|\/|\.)/)) {
         let image = `url(${background})`;
         const darken = this.getAttribute('darken-background');
@@ -43,7 +38,7 @@ export class SlidemSlide extends SlidemSlideBase {
         }
         this.style.backgroundImage = image;
       } else {
-        this.style.background = background;
+        this.style.setProperty('--background', background);
       }
     }
 
@@ -72,13 +67,8 @@ export class SlidemSlide extends SlidemSlideBase {
       }
       const color = textNode.getAttribute('color');
       if (color !== null) {
-        if (color.match(/^--[a-zA-Z-]*$/)) {
-          // Workaround for IE11 lacking CSS variables
-          if (window.ShadyCSS && window.ShadyCSS.variables) {
-            textNode.style.color = window.ShadyCSS.variables[color];
-          } else {
-            textNode.style.color = `var(${color})`;
-          }
+        if (color.match(/^--$/)) {
+          textNode.style.color = `var(${color})`;
         } else {
           textNode.style.color = color;
         }
