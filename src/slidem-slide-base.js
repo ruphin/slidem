@@ -7,6 +7,11 @@ const styleText = document.createTextNode(`
     opacity: 0;
     transition: opacity 0.2s;
   }
+
+  [current],
+  [past] {
+    opacity: 1;
+  }
 `);
 
 const styleNode = document.createElement('style');
@@ -112,6 +117,9 @@ export class SlidemSlideBase extends GluonElement {
     this._steps = Array.from(this.querySelectorAll('[reveal]'));
     this.steps = this._steps.length;
     this.__resizeContent();
+    this._steps.forEach((step, i) => step.setAttribute('step', i + 2));
+    if (this._steps.length)
+      this._steps[0].previousElementSibling.setAttribute('step', 1);
     let resizeTimeout;
     window.addEventListener('resize', () => {
       window.clearTimeout(resizeTimeout);
@@ -122,7 +130,7 @@ export class SlidemSlideBase extends GluonElement {
   }
 
   static get observedAttributes() {
-    return ['step'];
+    return ['auto', 'step'];
   }
 
   attributeChangedCallback(attr, oldVal, newVal) {
@@ -136,6 +144,20 @@ export class SlidemSlideBase extends GluonElement {
     }
   }
 
+  get auto() {
+    if (!this.hasAttribute('auto'))
+      return false;
+    else
+      return parseInt(this.getAttribute('auto')) || 5000;
+  }
+
+  set auto(v) {
+    if (!(typeof v === 'number') || Number.isNaN(v))
+      this.removeAttribute('auto');
+    else
+      this.setAttribute('auto', v.toString())
+  }
+
   set step(step) {
     this.setAttribute('step', step);
   }
@@ -144,13 +166,14 @@ export class SlidemSlideBase extends GluonElement {
     return Number(this.getAttribute('step')) || 1;
   }
 
-  __setStep(newStep) {
-    this._steps.forEach((step, i) => {
-      if (i < newStep - 1) {
-        step.style.opacity = 1;
-      } else {
-        step.style.opacity = 0;
-      }
+  __setStep(step) {
+    this.querySelector('[step="1"]')?.toggleAttribute?.('past', step > 1);
+    this._steps.forEach((el, i) => {
+      const elStep = i + 2;
+      const past = elStep < step;
+      const current = elStep === step;
+      el.toggleAttribute('past', past);
+      el.toggleAttribute('current', current);
     });
   }
 
