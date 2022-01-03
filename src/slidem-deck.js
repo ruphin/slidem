@@ -82,6 +82,7 @@ export class SlidemDeck extends GluonElement {
         <slot id="slides"></slot>
       </div>
       <div id="progress" part="progress"></div>
+      <div id="notes" part="notes"><slot name="presenter"></slot></div>
       <div id="timer" part="timer"></div>
       <gluon-keybinding id="timerToggle" key="t"></gluon-keybinding>
       <gluon-keybinding id="presenterToggle" key="p"></gluon-keybinding>
@@ -271,6 +272,22 @@ export class SlidemDeck extends GluonElement {
           transform: translate(28%, 0) scale(0.35) !important; /* Force presenter layout */
         }
 
+        #notes {
+          font-size: 18px;
+          position: absolute;
+          bottom: 10vh;
+          left: 4vw;
+        }
+
+        :host(:not([presenter])) #notes,
+        #notes ::slotted(*) {
+          display: none;
+        }
+
+        :host([presenter]) #notes ::slotted([active]) {
+          display: block;
+        }
+
         .slides ::slotted([active]) {
           z-index: 2;
         }
@@ -356,6 +373,10 @@ export class SlidemDeck extends GluonElement {
     // Create dots for progress bar
     this.slides.forEach(() => {
       this.$.progress.appendChild(document.createElement('div'));
+      slide.querySelectorAll('[slot="presenter"]').forEach(note => {
+        note.setAttribute('slide', i + 1);
+        this.appendChild(note);
+      });
     });
 
     /**
@@ -366,6 +387,15 @@ export class SlidemDeck extends GluonElement {
     onRouteChange(() => {
       this.activeSlide.step = this.currentStep + 1;
       this.activeSlide.setAttribute('active', '');
+
+      if (this.presenter) {
+        // set the `active` attr on any notes for this slide
+        this.$.notes
+          .querySelector('slot')
+          .assignedElements()
+          .forEach((note) =>
+            note.toggleAttribute('active', note.getAttribute('slide') == this.currentSlide + 1));
+      }
 
       if (this.previousSlide === this.currentSlide) {
         return;
