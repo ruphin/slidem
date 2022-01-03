@@ -81,7 +81,7 @@ export class SlidemDeck extends GluonElement {
       <div class="slides" part="slides">
         <slot id="slides"></slot>
       </div>
-      <div id="progress" part="progress"></div>
+      <div id="progress" part="progress"><slot name="progress" id="progressSlot"></slot></div>
       <div id="notes" part="notes"><slot name="presenter"></slot></div>
       <div id="timer" part="timer"></div>
       <gluon-keybinding id="timerToggle" key="t"></gluon-keybinding>
@@ -272,6 +272,10 @@ export class SlidemDeck extends GluonElement {
           transform: translate(28%, 0) scale(0.35) !important; /* Force presenter layout */
         }
 
+        :host([presenter]) #progress {
+          transform: translate(-20%, 25vh) scale(0.5);
+        }
+
         #notes {
           font-size: 18px;
           position: absolute;
@@ -374,7 +378,7 @@ export class SlidemDeck extends GluonElement {
 
     // Create dots for progress bar
     this.slides.forEach(() => {
-      this.$.progress.appendChild(document.createElement('div'));
+      this.$.progressSlot.appendChild(document.createElement('div'));
       slide.querySelectorAll('[slot="presenter"]').forEach(note => {
         note.setAttribute('slide', i + 1);
         this.appendChild(note);
@@ -444,11 +448,11 @@ export class SlidemDeck extends GluonElement {
       if (this.previousSlide !== undefined) {
         this.slides[this.previousSlide].removeAttribute('active');
         this.slides[this.previousSlide].setAttribute('previous', '');
-        this.$.progress.children[this.previousSlide].classList.remove('active');
+        this.$.progressSlot.children[this.previousSlide].classList.remove('active');
         this.oldPreviousSlide = this.previousSlide;
       }
 
-      this.$.progress.children[this.currentSlide].classList.add('active');
+      this.$.progressSlot.children[this.currentSlide].classList.add('active');
 
       this.previousSlide = this.currentSlide;
     });
