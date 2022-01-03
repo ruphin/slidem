@@ -82,6 +82,7 @@ export class SlidemDeck extends GluonElement {
         <slot id="slides"></slot>
       </div>
       <div id="progress" part="progress"><slot name="progress" id="progressSlot"></slot></div>
+      <div id="notes" part="notes"><slot name="presenter"></slot></div>
       <div id="timer" part="timer"></div>
       <gluon-keybinding id="timerToggle" key="t"></gluon-keybinding>
       <gluon-keybinding id="presenterToggle" key="p"></gluon-keybinding>
@@ -275,6 +276,22 @@ export class SlidemDeck extends GluonElement {
           transform: translate(-20%, 25vh) scale(0.5);
         }
 
+        #notes {
+          font-size: 18px;
+          position: absolute;
+          bottom: 10vh;
+          left: 4vw;
+        }
+
+        :host(:not([presenter])) #notes,
+        #notes ::slotted(*) {
+          display: none;
+        }
+
+        :host([presenter]) #notes ::slotted([active]) {
+          display: block;
+        }
+
         .slides ::slotted([active]) {
           z-index: 2;
         }
@@ -325,8 +342,14 @@ export class SlidemDeck extends GluonElement {
     }
   }
 
+  get activeSlide() {
+    return this.slides?.[this.currentSlide] ?? null;
+  }
+
   connectedCallback() {
     super.connectedCallback();
+    // cache the document title
+    this._originalTitle = document.title;
 
     // Initialize presenter mode based on the '?presenter' query being present
     this.presenter = currentQuery() === 'presenter';
@@ -356,6 +379,10 @@ export class SlidemDeck extends GluonElement {
     // Create dots for progress bar
     this.slides.forEach(() => {
       this.$.progressSlot.appendChild(document.createElement('div'));
+      slide.querySelectorAll('[slot="presenter"]').forEach(note => {
+        note.setAttribute('slide', i + 1);
+        this.appendChild(note);
+      });
     });
 
     /**
@@ -364,24 +391,43 @@ export class SlidemDeck extends GluonElement {
      * Handles route changes and displays / animates the slides by changing classes and attributes
      */
     onRouteChange(() => {
-      this.slides[this.currentSlide].step = this.currentStep + 1;
-      this.slides[this.currentSlide].setAttribute('active', '');
+      this.activeSlide.step = this.currentStep + 1;
+      this.activeSlide.setAttribute('active', '');
+
+      if (this.presenter) {
+        // set the `active` attr on any notes for this slide
+        this.$.notes
+          .querySelector('slot')
+          .assignedElements()
+          .forEach((note) =>
+            note.toggleAttribute('active', note.getAttribute('slide') == this.currentSlide + 1));
+      }
 
       if (this.previousSlide === this.currentSlide) {
         return;
       }
 
+      if (this.autoTimer)
+        clearInterval(this.autoTimer);
+
+      if (this.activeSlide.auto) {
+        this.autoTimer = setInterval(() => {
+          const { steps, step } = this.activeSlide;
+          this.activeSlide.step = (step === steps + 1) ? 1 : step + 1;
+        }, this.activeSlide.auto);
+      }
+
       if (this.previousSlide !== undefined) {
         if (this.previousSlide < this.currentSlide) {
           this.slides[this.previousSlide].classList.add('animate-forward');
-          this.slides[this.currentSlide].classList.add('animate-forward');
+          this.activeSlide.classList.add('animate-forward');
           this.slides[this.previousSlide].classList.remove('animate-backward');
-          this.slides[this.currentSlide].classList.remove('animate-backward');
+          this.activeSlide.classList.remove('animate-backward');
         } else {
           this.slides[this.previousSlide].classList.add('animate-backward');
-          this.slides[this.currentSlide].classList.add('animate-backward');
+          this.activeSlide.classList.add('animate-backward');
           this.slides[this.previousSlide].classList.remove('animate-forward');
-          this.slides[this.currentSlide].classList.remove('animate-forward');
+          this.activeSlide.classList.remove('animate-forward');
         }
       }
 
@@ -415,6 +461,10 @@ export class SlidemDeck extends GluonElement {
       path = window.history.pushState({}, '', `${path}${(query && '?' + query) || ''}${(hash && '#' + hash) || ''}`);
       window.dispatchEvent(new Event('location-changed'));
       localStorage.setItem('location', currentHash());
+      if (this.activeSlide.hasAttribute('name'))
+        document.title = this.activeSlide.getAttribute('name') + ' | ' + this._originalTitle;
+      else
+        document.title = this._originalTitle;
     };
 
     /**
@@ -423,16 +473,16 @@ export class SlidemDeck extends GluonElement {
      * The 'forward' and 'backward' elements handle click events and navigate to the next/previous step/slide
      */
     this.$.forward.onclick = () => {
-      if (this.slides[this.currentSlide].steps && this.slides[this.currentSlide].step <= this.slides[this.currentSlide].steps) {
-        changeLocation({ hash: `slide-${this.currentSlide + 1}/step-${this.slides[this.currentSlide].step + 1}` });
+      if (this.activeSlide.steps && this.activeSlide.step <= this.activeSlide.steps) {
+        changeLocation({ hash: `slide-${this.currentSlide + 1}/step-${this.activeSlide.step + 1}` });
       } else if (this.currentSlide < this.slides.length - 1) {
         changeLocation({ hash: `slide-${this.currentSlide + 2}/step-1` });
       }
     };
 
     this.$.backward.onclick = () => {
-      if (this.slides[this.currentSlide].steps && this.slides[this.currentSlide].step > 1) {
-        changeLocation({ hash: `slide-${this.currentSlide + 1}/step-${this.slides[this.currentSlide].step - 1}` });
+      if (this.activeSlide.steps && this.activeSlide.step > 1) {
+        changeLocation({ hash: `slide-${this.currentSlide + 1}/step-${this.activeSlide.step - 1}` });
       } else if (this.currentSlide > 0) {
         changeLocation({ hash: `slide-${this.currentSlide}/step-${(this.slides[this.currentSlide - 1].steps || 0) + 1}` });
       }
