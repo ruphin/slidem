@@ -377,7 +377,7 @@ export class SlidemDeck extends GluonElement {
     this.slides = Array.from(this.children).filter(item => !item.hasAttribute('slot'));
 
     // Create dots for progress bar
-    this.slides.forEach(() => {
+    this.slides.forEach((slide, i) => {
       this.$.progressSlot.appendChild(document.createElement('div'));
       slide.querySelectorAll('[slot="presenter"]').forEach(note => {
         note.setAttribute('slide', i + 1);
