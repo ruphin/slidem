@@ -4,7 +4,8 @@ import { onRouteChange, currentPath, currentQuery, currentHash } from '../@gluon
 import '../fontfaceobserver/fontfaceobserver.standalone.js';
 import '../@gluon/keybinding/gluon-keybinding.js';
 
-const styleText = document.createTextNode(`
+const globalStyleSheet = new CSSStyleSheet();
+globalStyleSheet.replaceSync(`
   /* SLIDEM GLOBAL STYLES */
   body {
     margin: 0;
@@ -71,9 +72,236 @@ const styleText = document.createTextNode(`
   }
 `);
 
-const styleNode = document.createElement('style');
-styleNode.appendChild(styleText);
-document.head.appendChild(styleNode);
+document.adoptedStyleSheets = [...document.adoptedStyleSheets, globalStyleSheet];
+
+const styleSheet = new CSSStyleSheet();
+styleSheet.replaceSync(`
+  @keyframes slidem-fade-in {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slidem-fade-out {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+
+    @keyframes slidem-slide-in-forward {
+      from { translate: 100vw 0; }
+      to { translate: 0 0; }
+    }
+
+    @keyframes slidem-slide-in-backward {
+      from { translate: 0 0; }
+      to { translate: 100vw 0; }
+    }
+
+    @keyframes slidem-slide-out-forward {
+      from { translate: 0 0; }
+      to { translate: -100vw 0; }
+    }
+
+    @keyframes slidem-slide-out-backward {
+      from { translate: -100vw 0; }
+      to { translate: 0 0; }
+    }
+
+    :host {
+      display: block;
+      overflow: hidden;
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      font-family: 'sans-serif';
+      font-size: 56px;
+      line-height: 1;
+    }
+
+    .slides ::slotted(*) {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      animation-duration: 0.4s;
+      animation-fill-mode: both;
+      animation-timing-function: ease-in-out;
+    }
+
+    .slides ::slotted(:not([active]):not([previous]):not([next])) {
+      display: none;
+    }
+
+    :host(:not([presenter])) .slides ::slotted([next]:not([previous])) {
+      display: none;
+    }
+
+    #progress {
+      position: absolute;
+      bottom: 0px;
+      left: 0;
+      right: 0;
+      height: 50px;
+      text-align: center;
+      display: flex;
+      flex-flow: row;
+      justify-content: center;
+      z-index: 10;
+    }
+
+    #progress div {
+      height: 8px;
+      width: 8px;
+      border-radius: 50%;
+      border: 2px solid white;
+      margin-left: 6px;
+      margin-right: 6px;
+      background: transparent;
+      transition: background 0.2s, transform 0.2s;
+    }
+
+    #progress div.active {
+      background: white;
+      transform: scale(1.3);
+    }
+
+    :host([progress="dark"]) #progress div {
+      border: 2px solid black;
+    }
+
+    :host([progress="dark"]) #progress div.active {
+      background: black;
+    }
+
+    :host([progress="none"]) #progress {
+      display: none;
+    }
+
+    #timer {
+      display: none;
+      position: absolute;
+      top: 5%;
+      right: 5%;
+      color: white;
+      font-size: 4vw;
+      font-weight: bold;
+      font-family: Helvetica, Arial, sans-serif;
+    }
+
+    :host([presenter]) #timer {
+      display: inline;
+    }
+
+    :host([presenter]) {
+      background: black;
+    }
+
+    /* White box around active slide */
+    :host([presenter])::before {
+      display: block;
+      position: absolute;
+      content: '';
+      top: calc(25% - 20px);
+      right:  calc(45% - 20px);
+      bottom:  calc(25% - 20px);
+      left:  calc(5% - 20px);
+      border: 2px solid white;
+    }
+
+    /* White box around next slide */
+    :host([presenter])::after {
+      display: block;
+      position: absolute;
+      content: '';
+      top: calc(32.5% - 20px);
+      right: calc(4.5% - 20px);
+      bottom: calc(32.5% - 20px);
+      left: calc(60.5% - 20px);
+      border: 2px solid white;
+    }
+
+    :host([presenter]) .slides ::slotted(*) {
+      animation: none !important; /* Block user-configured animations */
+    }
+
+    :host([presenter]) .slides ::slotted([previous]:not([next])) {
+      display: none;
+    }
+
+    :host([presenter]) .slides ::slotted([active]) {
+      transform: translate(-20%, 0) scale(0.5) !important; /* Force presenter layout */
+    }
+
+    :host([presenter]) .slides ::slotted([next]) {
+      transform: translate(28%, 0) scale(0.35) !important; /* Force presenter layout */
+    }
+
+    :host([presenter]) #progress {
+      transform: translate(-20%, 25vh) scale(0.5);
+    }
+
+    #notes {
+      font-size: 18px;
+      position: absolute;
+      bottom: 10vh;
+      left: 4vw;
+    }
+
+    :host(:not([presenter])) #notes,
+    #notes ::slotted(*) {
+      display: none;
+    }
+
+    :host([presenter]) #notes ::slotted([active]) {
+      display: block;
+    }
+
+    .slides ::slotted([active]) {
+      z-index: 2;
+    }
+
+    .slides ::slotted([previous]) {
+      z-index: 0;
+    }
+
+    .slides ::slotted([fade-in][active].animate-forward) {
+      animation-name: slidem-fade-in;
+    }
+
+    .slides ::slotted([fade-in][previous].animate-backward) {
+      animation-name: slidem-fade-out;
+      z-index: 3;
+    }
+
+    .slides ::slotted([fade-out][active].animate-backward) {
+      animation-name: slidem-fade-in;
+    }
+
+    .slides ::slotted([fade-out][previous].animate-forward) {
+      animation-name: slidem-fade-out;
+      z-index: 3;
+    }
+
+    .slides ::slotted([slide-in][active].animate-forward) {
+      animation-name: slidem-slide-in-forward;
+    }
+
+    .slides ::slotted([slide-in][previous].animate-backward) {
+      animation-name: slidem-slide-in-backward;
+      z-index: 3;
+    }
+
+    .slides ::slotted([slide-out][active].animate-backward) {
+      animation-name: slidem-slide-out-backward;
+    }
+
+    .slides ::slotted([slide-out][previous].animate-forward) {
+      animation-name: slidem-slide-out-forward;
+      z-index: 3;
+    }
+`);
 
 export class SlidemDeck extends GluonElement {
   get template() {
@@ -98,235 +326,6 @@ export class SlidemDeck extends GluonElement {
         <gluon-keybinding key="Left"></gluon-keybinding>
         <slot name="backward"></slot>
       </div>
-      <style>
-        @keyframes slidem-fade-in {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
-        }
-
-        @keyframes slidem-fade-out {
-          from {
-            opacity: 1;
-          }
-          to {
-            opacity: 0;
-          }
-        }
-
-        @keyframes slidem-slide-in-forward {
-          from {
-            transform: translateX(100vw);
-          }
-          to {
-            transform: translateX(0);
-          }
-        }
-
-        @keyframes slidem-slide-in-backward {
-          from {
-            transform: translateX(0);
-          }
-          to {
-            transform: translateX(100vw);
-          }
-        }
-
-        @keyframes slidem-slide-out-forward {
-          from {
-            transform: translateX(0);
-          }
-          to {
-            transform: translateX(-100vw);
-          }
-        }
-
-        @keyframes slidem-slide-out-backward {
-          from {
-            transform: translateX(-100vw);
-          }
-          to {
-            transform: translateX(0);
-          }
-        }
-        :host {
-          display: block;
-          overflow: hidden;
-          position: absolute;
-          top: 0;
-          left: 0;
-          bottom: 0;
-          right: 0;
-          font-family: 'sans-serif';
-          font-size: 56px;
-          line-height: 1;
-        }
-
-        .slides ::slotted(*) {
-          position: absolute;
-          top: 0;
-          right: 0;
-          bottom: 0;
-          left: 0;
-          animation-duration: 0.4s;
-          animation-fill-mode: both;
-          animation-timing-function: ease-in-out;
-        }
-
-        .slides ::slotted(:not([active]):not([previous]):not([next])) {
-          display: none;
-        }
-
-        :host(:not([presenter])) .slides ::slotted([next]:not([previous])) {
-          display: none;
-        }
-
-        #progress {
-          position: absolute;
-          bottom: 0px;
-          left: 0;
-          right: 0;
-          height: 50px;
-          text-align: center;
-          display: flex;
-          flex-flow: row;
-          justify-content: center;
-          z-index: 10;
-        }
-        #progress div {
-          height: 8px;
-          width: 8px;
-          border-radius: 50%;
-          border: 2px solid white;
-          margin-left: 6px;
-          margin-right: 6px;
-          background: transparent;
-          transition: background 0.2s, transform 0.2s;
-        }
-        #progress div.active {
-          background: white;
-          transform: scale(1.3);
-        }
-        :host([progress="dark"]) #progress div {
-          border: 2px solid black;
-        }
-        :host([progress="dark"]) #progress div.active {
-          background: black;
-        }
-        :host([progress="none"]) #progress {
-          display: none;
-        }
-
-        #timer {
-          display: none;
-          position: absolute;
-          top: 5%;
-          right: 5%;
-          color: white;
-          font-size: 4vw;
-          font-weight: bold;
-          font-family: Helvetica, Arial, sans-serif;
-        }
-        :host([presenter]) #timer {
-          display: inline;
-        }
-
-        :host([presenter]) {
-          background: black;
-        }
-        /* White box around active slide */
-        :host([presenter])::before {
-          display: block;
-          position: absolute;
-          content: '';
-          top: calc(25% - 20px);
-          right:  calc(45% - 20px);
-          bottom:  calc(25% - 20px);
-          left:  calc(5% - 20px);
-          border: 2px solid white;
-        }
-        /* White box around next slide */
-        :host([presenter])::after {
-          display: block;
-          position: absolute;
-          content: '';
-          top: calc(32.5% - 20px);
-          right: calc(4.5% - 20px);
-          bottom: calc(32.5% - 20px);
-          left: calc(60.5% - 20px);
-          border: 2px solid white;
-        }
-        :host([presenter]) .slides ::slotted(*) {
-          animation: none !important; /* Block user-configured animations */
-        }
-        :host([presenter]) .slides ::slotted([previous]:not([next])) {
-          display: none;
-        }
-        :host([presenter]) .slides ::slotted([active]) {
-          transform: translate(-20%, 0) scale(0.5) !important; /* Force presenter layout */
-        }
-        :host([presenter]) .slides ::slotted([next]) {
-          transform: translate(28%, 0) scale(0.35) !important; /* Force presenter layout */
-        }
-
-        :host([presenter]) #progress {
-          transform: translate(-20%, 25vh) scale(0.5);
-        }
-
-        #notes {
-          font-size: 18px;
-          position: absolute;
-          bottom: 10vh;
-          left: 4vw;
-        }
-
-        :host(:not([presenter])) #notes,
-        #notes ::slotted(*) {
-          display: none;
-        }
-
-        :host([presenter]) #notes ::slotted([active]) {
-          display: block;
-        }
-
-        .slides ::slotted([active]) {
-          z-index: 2;
-        }
-        .slides ::slotted([previous]) {
-          z-index: 0;
-        }
-        .slides ::slotted([fade-in][active].animate-forward) {
-          animation-name: slidem-fade-in;
-        }
-        .slides ::slotted([fade-in][previous].animate-backward) {
-          animation-name: slidem-fade-out;
-          z-index: 3;
-        }
-        .slides ::slotted([fade-out][active].animate-backward) {
-          animation-name: slidem-fade-in;
-        }
-        .slides ::slotted([fade-out][previous].animate-forward) {
-          animation-name: slidem-fade-out;
-          z-index: 3;
-        }
-        .slides ::slotted([slide-in][active].animate-forward) {
-          animation-name: slidem-slide-in-forward;
-        }
-        .slides ::slotted([slide-in][previous].animate-backward) {
-          animation-name: slidem-slide-in-backward;
-          z-index: 3;
-        }
-        .slides ::slotted([slide-out][active].animate-backward) {
-          animation-name: slidem-slide-out-backward;
-        }
-        .slides ::slotted([slide-out][previous].animate-forward) {
-          animation-name: slidem-slide-out-forward;
-          z-index: 3;
-        }
-      </style>
     `;
   }
 
@@ -348,6 +347,7 @@ export class SlidemDeck extends GluonElement {
 
   connectedCallback() {
     super.connectedCallback();
+    this.shadowRoot.adoptedStyleSheets = [...this.shadowRoot.adoptedStyleSheets, styleSheet];
     // cache the document title
     this._originalTitle = document.title;
 

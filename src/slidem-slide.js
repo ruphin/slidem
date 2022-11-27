@@ -1,6 +1,7 @@
 import { SlidemSlideBase } from './slidem-slide-base.js';
 
-const styleText = document.createTextNode(`
+const globalStyleSheet = new CSSStyleSheet();
+globalStyleSheet.replaceSync(`
   /* SLIDEM BASIC SLIDE STYLE */
   slidem-slide h1,
   slidem-slide h2,
@@ -19,9 +20,7 @@ const styleText = document.createTextNode(`
   }
 `);
 
-const styleNode = document.createElement('style');
-styleNode.appendChild(styleText);
-document.head.appendChild(styleNode);
+document.adoptedStyleSheets = [...document.adoptedStyleSheets, globalStyleSheet];
 
 export class SlidemSlide extends SlidemSlideBase {
   connectedCallback() {
