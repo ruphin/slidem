@@ -221,7 +221,7 @@ styleSheet.replaceSync(`
   }
 
   :host([presenter]) #progress {
-    translate: -20%, 25vh;
+    translate: -20% 25vh;
     scale: 0.5;
   }
 
