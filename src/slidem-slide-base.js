@@ -108,15 +108,16 @@ export class SlidemSlideBase extends GluonElement {
     }
   }
 
+  #steps = Array.from(this.querySelectorAll('[reveal]'));
+
   connectedCallback() {
     super.connectedCallback();
     this.shadowRoot.adoptedStyleSheets = [...this.shadowRoot.adoptedStyleSheets, styleSheet];
-    this._steps = Array.from(this.querySelectorAll('[reveal]'));
-    this.steps = this._steps.length;
+    this.steps = this.#steps.length;
     this.#resizeContent();
-    this._steps.forEach((step, i) => step.setAttribute('step', i + 2));
-    if (this._steps.length)
-      this._steps[0].previousElementSibling.setAttribute('step', 1);
+    this.#steps.forEach((step, i) => step.setAttribute('step', i + 2));
+    if (this.#steps.length)
+      this.#steps[0].previousElementSibling?.setAttribute('step', 1);
     let resizeTimeout;
     window.addEventListener('resize', () => {
       window.clearTimeout(resizeTimeout);
@@ -165,7 +166,7 @@ export class SlidemSlideBase extends GluonElement {
 
   #setStep(step) {
     this.querySelector('[step="1"]')?.toggleAttribute?.('past', step > 1);
-    this._steps.forEach((el, i) => {
+    this.#steps.forEach((el, i) => {
       const elStep = i + 2;
       const past = elStep < step;
       const current = elStep === step;
