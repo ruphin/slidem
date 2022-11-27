@@ -38,22 +38,22 @@ styleSheet.replaceSync(`
   @keyframes zoom-in {
     from {
       opacity: 0;
-      transform: scale(0);
+      scale: 0;
     }
     to {
       opacity: 1;
-      transform: scale(var(--slidem-content-scale, 1));
+      scale: var(--slidem-content-scale, 1);
     }
   }
 
   @keyframes zoom-out {
     from {
       opacity: 1;
-      transform: scale(var(--slidem-content-scale, 1));
+      scale: var(--slidem-content-scale, 1);
     }
     to {
       opacity: 0;
-      transform: scale(0);
+      scale: 0;
     }
   }
 
@@ -182,10 +182,10 @@ export class SlidemSlideBase extends GluonElement {
     const scale = Math.min(window.innerHeight / 1.09 / height, window.innerWidth / 1.09 / width);
     if (scale < 1) {
       document.documentElement.style.setProperty('--slidem-content-scale', scale);
-      this.$.content && (this.$.content.style.transform = `scale(${scale})`);
+      this.$.content?.style?.setProperty('scale', scale);
     } else {
       document.documentElement.style.setProperty('--slidem-content-scale', 1);
-      this.$.content && (this.$.content.style.transform = `scale(1)`);
+      this.$.content?.style?.setProperty('scale', 1);
     }
   }
 }

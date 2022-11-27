@@ -43,25 +43,25 @@ export class SlidemSlide extends SlidemSlideBase {
 
     this.textNodes = Array.from(this.querySelectorAll('h1, h2, h3, h4, h5, h6, p, li, span, em, strong, small'));
     this.textNodes.forEach(textNode => {
-      if (textNode.getAttribute('font-size') !== null) {
+      if (textNode.hasAttribute('font-size')) {
         textNode.style.fontSize = textNode.getAttribute('font-size');
       }
-      if (textNode.getAttribute('bold') !== null) {
+      if (textNode.hasAttribute('bold')) {
         textNode.style.fontWeight = 'bold';
       }
-      if (textNode.getAttribute('underline') !== null) {
+      if (textNode.hasAttribute('underline')) {
         textNode.style.textDecoration = 'underline';
       }
-      if (textNode.getAttribute('italic') !== null) {
+      if (textNode.hasAttribute('italic')) {
         textNode.style.fontStyle = 'italic';
       }
-      if (textNode.getAttribute('uppercase') !== null) {
+      if (textNode.hasAttribute('uppercase')) {
         textNode.style.textTransform = 'uppercase';
       }
-      if (textNode.getAttribute('center') !== null) {
+      if (textNode.hasAttribute('center')) {
         textNode.style.textAlign = 'center';
       }
-      if (textNode.getAttribute('line-height') !== null) {
+      if (textNode.hasAttribute('line-height')) {
         textNode.style.lineHeight = textNode.getAttribute('line-height');
       }
       const color = textNode.getAttribute('color');
@@ -96,12 +96,12 @@ export class SlidemSlide extends SlidemSlideBase {
       this.dispatchEvent(new Event('activated'));
     if (attr === 'active' || attr === 'next') {
       if (newVal !== null) {
-        this.__rescale();
+        this.#rescale();
       }
     }
   }
 
-  __rescale() {
+  #rescale() {
     requestAnimationFrame(() => {
       this.textNodes.forEach(textNode => {
         if (textNode.getAttribute('fit') !== null) {
