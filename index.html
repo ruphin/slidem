@@ -12,15 +12,11 @@
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans+Condensed:700" />
 
-<!-- This loads the app on Chrome, Edge, Firefox, and Safari -->
-<!-- Modules are always nonblocking, and they load after regular scripts, so we can put them first -->
-<script type="module" src="/index.js"></script>
-
-<!-- Polyfills for IE11 -->
-<script nomodule src="/@babel/polyfill/dist/polyfill.min.js"></script>
-
-<!-- Webcomponents Polyfill (no-op on browsers that have support) -->
-<script src="/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
+<script type="module">
+  import '../slidem-deck.js';
+  import '../slidem-slide.js';
+  import '../slidem-video-slide.js';
+</script>
 
 <style>
   :root {
@@ -31,18 +27,6 @@
     display: none;
   }
 </style>
-
-<script>
-  // IE11 workaround
-  if (window.ShadyCSS) {
-    window.ShadyCSS.variables = {
-      '--primary': '#FF2A69'
-    };
-  }
-</script>
-
-<!-- Load the app on IE11 -->
-<script nomodule src="./index.es5.js"></script>
 
 <slidem-deck transition="slide-in slide-out" font="Open Sans Condensed" loading>
   <slidem-slide center slide-in background="--primary">
@@ -79,7 +63,7 @@
     <p fit uppercase reveal color="--primary">Background imagery</p>
   </slidem-slide>
 
-  <slidem-polymersummit-slide>
+  <slidem-slide>
     <h2 slot="title">Custom Styling</h2>
     <p reveal slot="subtitle">Design with HTML and CSS</p>
     <img slot="logo" src="/images/polymer.png" />
@@ -88,7 +72,7 @@
     <p slot="speaker">Goffert van Gool</p>
     <a slot="email" href="mailto:ruphin@ruphin.net">ruphin@ruphin.net</a>
     <a slot="twitter" href="https://twitter.com/ruphin_">@ruphin_</a>
-  </slidem-polymersummit-slide>
+  </slidem-slide>
 
   <slidem-slide center slide-in darken-background=".8" background="/images/presenter.jpg">
     <h2 uppercase font-size="158px" line-height="1.8" color="white">Other features include</h2>
