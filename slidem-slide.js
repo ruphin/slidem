@@ -43,12 +43,7 @@ export class SlidemSlide extends SlidemSlideBase {
     const { background, backgroundOpacity } = this;
     if (background) {
       if (background.match(/^--[a-zA-Z-]*$/)) {
-        // Workaround for IE11 lacking CSS variables
-        if (window.ShadyCSS && window.ShadyCSS.variables) {
-          this.style.background = window.ShadyCSS.variables[background];
-        } else {
-          this.style.background = `var(${background})`;
-        }
+        this.style.background = `var(${background})`;
       } else if (background.match(/^(http|\/|\.)/)) {
         const overlayOpacity = (1 - backgroundOpacity).toFixed(3);
         this.style.backgroundImage = `linear-gradient(rgba(0,0,0,${overlayOpacity}), rgba(0,0,0,${overlayOpacity})), url(${background})`;
@@ -95,12 +90,7 @@ export class SlidemSlide extends SlidemSlideBase {
       const color = textNode.getAttribute("color");
       if (color !== null) {
         if (color.match(/^--[a-zA-Z-]*$/)) {
-          // Workaround for IE11 lacking CSS variables
-          if (window.ShadyCSS && window.ShadyCSS.variables) {
-            textNode.style.color = window.ShadyCSS.variables[color];
-          } else {
-            textNode.style.color = `var(${color})`;
-          }
+          textNode.style.color = `var(${color})`;
         } else {
           textNode.style.color = color;
         }

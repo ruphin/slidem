@@ -1,5 +1,4 @@
-import { LitElement, css } from "lit-element";
-import { html, render } from "lit-html";
+import { LitElement, css, html, render } from "lit";
 import {
   router,
   ROUTE_CHANGED,
@@ -13,249 +12,256 @@ import {
 import "fontfaceobserver/fontfaceobserver.standalone.js";
 import "@ruphin/key-bind";
 
-const keyframeStyles = html`
-  <style>
-    @keyframes slidem-fade-in {
-      from {
-        opacity: 0;
-      }
-      to {
-        opacity: 1;
-      }
-    }
+window.thingy = render;
+window.other = html;
 
-    @keyframes slidem-fade-out {
-      from {
-        opacity: 1;
-      }
-      to {
-        opacity: 0;
-      }
-    }
-
-    @keyframes slidem-slide-in-forward {
-      from {
-        transform: translateX(100vw);
-      }
-      to {
-        transform: translateX(0);
-      }
-    }
-
-    @keyframes slidem-slide-in-backward {
-      from {
-        transform: translateX(0);
-      }
-      to {
-        transform: translateX(100vw);
-      }
-    }
-
-    @keyframes slidem-slide-out-forward {
-      from {
-        transform: translateX(0);
-      }
-      to {
-        transform: translateX(-100vw);
-      }
-    }
-
-    @keyframes slidem-slide-out-backward {
-      from {
-        transform: translateX(-100vw);
-      }
-      to {
-        transform: translateX(0);
-      }
-    }
-  </style>
-`;
-const globalStyles = html`
-  <style>
-    /* SLIDEM GLOBAL STYLES */
-    body {
-      margin: 0;
-    }
-
-    slidem-deck {
-      display: none;
-    }
-
-    slidem-deck[loaded] {
-      display: block;
-    }
-
-    [reveal] {
+const keyframeStyles = css`
+  @keyframes slidem-fade-in {
+    from {
       opacity: 0;
-      transition: opacity 0.2s;
     }
-  </style>
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slidem-fade-out {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+
+  @keyframes slidem-slide-in-forward {
+    from {
+      transform: translateX(100vw);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slidem-slide-in-backward {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(100vw);
+    }
+  }
+
+  @keyframes slidem-slide-out-forward {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-100vw);
+    }
+  }
+
+  @keyframes slidem-slide-out-backward {
+    from {
+      transform: translateX(-100vw);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+`;
+const globalStyles = css`
+  /* SLIDEM GLOBAL STYLES */
+  body {
+    margin: 0;
+  }
+
+  slidem-deck {
+    display: none;
+  }
+
+  slidem-deck[loaded] {
+    display: block;
+  }
+
+  [reveal] {
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
   ${keyframeStyles}
 `;
 
 const styleContainer = document.createDocumentFragment();
-render(globalStyles, styleContainer);
+render(
+  html`<style>
+    ${globalStyles.cssText}
+  </style>`,
+  styleContainer
+);
 document.head.appendChild(styleContainer);
 
 interceptNavigation();
 
 export class SlidemDeck extends LitElement {
   static get styles() {
-    return css`
-      :host {
-        overflow: hidden;
-        position: absolute;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        right: 0;
-        font-family: "sans-serif";
-        font-size: 56px;
-        line-height: 1;
-      }
+    return [
+      css`
+        :host {
+          overflow: hidden;
+          position: absolute;
+          top: 0;
+          left: 0;
+          bottom: 0;
+          right: 0;
+          font-family: "sans-serif";
+          font-size: 56px;
+          line-height: 1;
+        }
 
-      .slides ::slotted(*) {
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        animation-duration: 0.4s;
-        animation-fill-mode: both;
-        animation-timing-function: ease-in-out;
-      }
+        .slides ::slotted(*) {
+          position: absolute;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          left: 0;
+          animation-duration: 0.4s;
+          animation-fill-mode: both;
+          animation-timing-function: ease-in-out;
+        }
 
-      .slides ::slotted(:not([active]):not([previous]):not([next])) {
-        display: none;
-      }
+        .slides ::slotted(:not([active]):not([previous]):not([next])) {
+          display: none;
+        }
 
-      :host(:not([presenter])) .slides ::slotted([next]:not([previous])) {
-        display: none;
-      }
+        :host(:not([presenter])) .slides ::slotted([next]:not([previous])) {
+          display: none;
+        }
 
-      #progress {
-        position: absolute;
-        bottom: 0px;
-        left: 0;
-        right: 0;
-        height: 50px;
-        text-align: center;
-        display: flex;
-        flex-flow: row;
-        justify-content: center;
-        z-index: 10;
-      }
-      #progress div {
-        height: 8px;
-        width: 8px;
-        border-radius: 50%;
-        border: 2px solid white;
-        margin-left: 6px;
-        margin-right: 6px;
-        background: transparent;
-        transition: background 0.2s, transform 0.2s;
-      }
-      #progress div.active {
-        background: white;
-        transform: scale(1.3);
-      }
-      :host([progress="dark"]) #progress div {
-        border: 2px solid black;
-      }
-      :host([progress="dark"]) #progress div.active {
-        background: black;
-      }
-      :host([progress="none"]) #progress {
-        display: none;
-      }
+        #progress {
+          position: absolute;
+          bottom: 0px;
+          left: 0;
+          right: 0;
+          height: 50px;
+          text-align: center;
+          display: flex;
+          flex-flow: row;
+          justify-content: center;
+          z-index: 10;
+        }
+        #progress div {
+          height: 8px;
+          width: 8px;
+          border-radius: 50%;
+          border: 2px solid white;
+          margin-left: 6px;
+          margin-right: 6px;
+          background: transparent;
+          transition: background 0.2s, transform 0.2s;
+        }
+        #progress div.active {
+          background: white;
+          transform: scale(1.3);
+        }
+        :host([progress="dark"]) #progress div {
+          border: 2px solid black;
+        }
+        :host([progress="dark"]) #progress div.active {
+          background: black;
+        }
+        :host([progress="none"]) #progress {
+          display: none;
+        }
 
-      #timer {
-        display: none;
-        position: absolute;
-        top: 5%;
-        right: 5%;
-        color: white;
-        font-size: 4vw;
-        font-weight: bold;
-        font-family: Helvetica, Arial, sans-serif;
-      }
-      :host([presenter]) #timer {
-        display: inline;
-      }
+        #timer {
+          display: none;
+          position: absolute;
+          top: 5%;
+          right: 5%;
+          color: white;
+          font-size: 4vw;
+          font-weight: bold;
+          font-family: Helvetica, Arial, sans-serif;
+        }
+        :host([presenter]) #timer {
+          display: inline;
+        }
 
-      :host([presenter]) {
-        background: black;
-      }
-      /* White box around active slide */
-      :host([presenter])::before {
-        display: block;
-        position: absolute;
-        content: "";
-        top: calc(25% - 20px);
-        right: calc(45% - 20px);
-        bottom: calc(25% - 20px);
-        left: calc(5% - 20px);
-        border: 2px solid white;
-      }
-      /* White box around next slide */
-      :host([presenter])::after {
-        display: block;
-        position: absolute;
-        content: "";
-        top: calc(32.5% - 20px);
-        right: calc(4.5% - 20px);
-        bottom: calc(32.5% - 20px);
-        left: calc(60.5% - 20px);
-        border: 2px solid white;
-      }
-      :host([presenter]) .slides ::slotted(*) {
-        animation: none !important; /* Block user-configured animations */
-      }
-      :host([presenter]) .slides ::slotted([previous]:not([next])) {
-        display: none;
-      }
-      :host([presenter]) .slides ::slotted([active]) {
-        transform: translate(-20%, 0) scale(0.5) !important; /* Force presenter layout */
-      }
-      :host([presenter]) .slides ::slotted([next]) {
-        transform: translate(28%, 0) scale(0.35) !important; /* Force presenter layout */
-      }
+        :host([presenter]) {
+          background: black;
+        }
+        /* White box around active slide */
+        :host([presenter])::before {
+          display: block;
+          position: absolute;
+          content: "";
+          top: calc(25% - 20px);
+          right: calc(45% - 20px);
+          bottom: calc(25% - 20px);
+          left: calc(5% - 20px);
+          border: 2px solid white;
+        }
+        /* White box around next slide */
+        :host([presenter])::after {
+          display: block;
+          position: absolute;
+          content: "";
+          top: calc(32.5% - 20px);
+          right: calc(4.5% - 20px);
+          bottom: calc(32.5% - 20px);
+          left: calc(60.5% - 20px);
+          border: 2px solid white;
+        }
+        :host([presenter]) .slides ::slotted(*) {
+          animation: none !important; /* Block user-configured animations */
+        }
+        :host([presenter]) .slides ::slotted([previous]:not([next])) {
+          display: none;
+        }
+        :host([presenter]) .slides ::slotted([active]) {
+          transform: translate(-20%, 0) scale(0.5) !important; /* Force presenter layout */
+        }
+        :host([presenter]) .slides ::slotted([next]) {
+          transform: translate(28%, 0) scale(0.35) !important; /* Force presenter layout */
+        }
 
-      .slides ::slotted([active]) {
-        z-index: 2;
-      }
-      .slides ::slotted([previous]) {
-        z-index: 0;
-      }
-      .slides ::slotted([fade-in][active].animate-forward) {
-        animation-name: slidem-fade-in;
-      }
-      .slides ::slotted([fade-in][previous].animate-backward) {
-        animation-name: slidem-fade-out;
-        z-index: 3;
-      }
-      .slides ::slotted([fade-out][active].animate-backward) {
-        animation-name: slidem-fade-in;
-      }
-      .slides ::slotted([fade-out][previous].animate-forward) {
-        animation-name: slidem-fade-out;
-        z-index: 3;
-      }
-      .slides ::slotted([slide-in][active].animate-forward) {
-        animation-name: slidem-slide-in-forward;
-      }
-      .slides ::slotted([slide-in][previous].animate-backward) {
-        animation-name: slidem-slide-in-backward;
-        z-index: 3;
-      }
-      .slides ::slotted([slide-out][active].animate-backward) {
-        animation-name: slidem-slide-out-backward;
-      }
-      .slides ::slotted([slide-out][previous].animate-forward) {
-        animation-name: slidem-slide-out-forward;
-        z-index: 3;
-      }
-    `;
+        .slides ::slotted([active]) {
+          z-index: 2;
+        }
+        .slides ::slotted([previous]) {
+          z-index: 0;
+        }
+        .slides ::slotted([fade-in][active].animate-forward) {
+          animation-name: slidem-fade-in;
+        }
+        .slides ::slotted([fade-in][previous].animate-backward) {
+          animation-name: slidem-fade-out;
+          z-index: 3;
+        }
+        .slides ::slotted([fade-out][active].animate-backward) {
+          animation-name: slidem-fade-in;
+        }
+        .slides ::slotted([fade-out][previous].animate-forward) {
+          animation-name: slidem-fade-out;
+          z-index: 3;
+        }
+        .slides ::slotted([slide-in][active].animate-forward) {
+          animation-name: slidem-slide-in-forward;
+        }
+        .slides ::slotted([slide-in][previous].animate-backward) {
+          animation-name: slidem-slide-in-backward;
+          z-index: 3;
+        }
+        .slides ::slotted([slide-out][active].animate-backward) {
+          animation-name: slidem-slide-out-backward;
+        }
+        .slides ::slotted([slide-out][previous].animate-forward) {
+          animation-name: slidem-slide-out-forward;
+          z-index: 3;
+        }
+      `,
+      keyframeStyles,
+    ];
   }
 
   static get properties() {
@@ -266,7 +272,6 @@ export class SlidemDeck extends LitElement {
 
   render() {
     return html`
-      ${keyframeStyles}
       <div class="slides">
         <slot id="slides"></slot>
       </div>

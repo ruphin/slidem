@@ -12,18 +12,18 @@
   "author": "Goffert van Gool",
   "license": "MIT",
   "scripts": {
-    "dev": "es-dev-server --node-resolve --watch --port 5000",
+    "dev": "wds --node-resolve --watch --app-index demo/index.html --port 5000",
     "release": "np",
     "test": "echo 'No tests!'"
   },
   "dependencies": {
-    "@ruphin/spa-router": "^0.1.0",
     "@ruphin/key-bind": "^1.0.0",
-    "lit-element": "^2.3.1",
-    "fontfaceobserver": "^2.1.0"
+    "@ruphin/spa-router": "^1.0.0",
+    "fontfaceobserver": "^2.1.0",
+    "lit": "^2.0.2"
   },
   "devDependencies": {
-    "es-dev-server": "^1.55.0",
-    "np": "^6.2.4"
+    "@web/dev-server": "^0.1.29",
+    "np": "^7.6.0"
   }
 }

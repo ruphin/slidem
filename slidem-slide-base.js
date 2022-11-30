@@ -1,4 +1,4 @@
-import { LitElement, css, html } from "lit-element";
+import { LitElement, css, html } from "lit";
 
 export class SlidemSlideBase extends LitElement {
   static get properties() {
