@@ -2,10 +2,11 @@
   "name": "slidem",
   "version": "2.0.0",
   "description": "A Web Component based slide deck",
-  "main": "slidem-deck.js",
-  "module": "slidem-deck.js",
+  "main": "slidem.js",
+  "module": "slidem.js",
   "type": "module",
   "files": [
+    "slidem.js",
     "slidem-*"
   ],
   "repository": "git@github.com:ruphin/slidem.git",
