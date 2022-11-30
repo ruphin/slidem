@@ -144,7 +144,6 @@ export class SlidemDeck extends HTMLElement {
      */
     this.$.forward.addEventListener('click', () => this.forward());
     this.$.backward.addEventListener('click', () => this.back());
-
     this.#init();
   }
 
@@ -161,37 +160,26 @@ export class SlidemDeck extends HTMLElement {
    * It calls the 'init' function once all fonts are loaded, or after a 2 second timeout.
    */
   async #init() {
-    if (this.getAttribute('font')) {
+    if (this.getAttribute('font'))
       this.style.fontFamily = this.getAttribute('font');
-    }
 
     // Wait until all child elements that are custom elements are registered in the customElements registry, or the timeOut happens
     await Promise.race([
       this.#untilDefined(),
-      this.#loadFonts(),
+      document.fonts.ready,
       new Promise(r => void setTimeout(r, 2000)),
     ]);
 
+    await document.fonts.ready;
+    await new Promise(requestAnimationFrame);
     this.removeAttribute('loading');
-    // Trigger the router to display the current page
-    window.dispatchEvent(new Event('location-changed'));
+    this.#onRouteChange();
   }
 
   async #untilDefined() {
     await Promise.all(this.slides
       .filter(slide => slide.localName.includes('-'))
       .map(slide => customElements.whenDefined(slide.localName)));
-  }
-
-  async #loadFonts() {
-    try {
-      // Then feed all the 'fonts'  defined in those elements and the font in the slidem-deck to FontFaceObserver
-      await Promise.all(this.slides
-        .reduce((fonts, slide) => [...fonts, ...(slide.fonts ?? [])], [this.getAttribute('font')].filter(Boolean))
-        .map(font => new FontFace(font).load()));
-    } catch {
-      console.warn('[slidem-deck]: Failed to initialize fonts');
-    }
   }
 
   #onKeyup({ key }) {

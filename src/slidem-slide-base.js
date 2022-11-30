@@ -2,9 +2,10 @@ import styleSheet from './slidem-slide-base.css' assert { type: 'css' };
 import template from './slidem-slide-base.html' assert { type: 'html-template' };
 
 export class SlidemSlideBase extends HTMLElement {
-  static get observedAttributes() {
-    return ['auto', 'step'];
-  }
+  static observedAttributes = [
+    'auto',
+    'step',
+  ];
 
   static #instances = new Set();
 

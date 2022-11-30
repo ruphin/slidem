@@ -31,10 +31,6 @@
   animation-name: zoom-in;
 }
 
-:host(:not([center])) #content {
-  height: var(--slidem-content-height, 990px);
-}
-
 #container {
   display: flex;
   flex-direction: column;
@@ -46,6 +42,10 @@
   width: var(--slidem-content-width, 1760px);
   max-height: var(--slidem-content-height, 990px);
   flex-shrink: 0;
+}
+
+:host(:not([center])) #content {
+  height: var(--slidem-content-height, 990px);
 }
 
 @keyframes zoom-in {
