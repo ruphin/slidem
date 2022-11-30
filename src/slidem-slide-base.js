@@ -108,10 +108,11 @@ export class SlidemSlideBase extends GluonElement {
     }
   }
 
-  #steps = Array.from(this.querySelectorAll('[reveal]'));
+  #steps;
 
   connectedCallback() {
     super.connectedCallback();
+    this.#steps = Array.from(this.querySelectorAll('[reveal]'));
     this.shadowRoot.adoptedStyleSheets = [...this.shadowRoot.adoptedStyleSheets, styleSheet];
     this.steps = this.#steps.length;
     this.#resizeContent();
