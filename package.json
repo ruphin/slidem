@@ -18,7 +18,8 @@
     "build": "node build.js",
     "start": "wds --open",
     "release": "np",
-    "test": "wtr"
+    "test": "wtr",
+    "prepublishOnly": "npm run build"
   },
   "devDependencies": {
     "@web/test-runner": "^0.15.0",
