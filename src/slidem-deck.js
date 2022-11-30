@@ -1,360 +1,133 @@
-import { GluonElement, html } from '../@gluon/gluon/gluon.js';
-import { onRouteChange, currentPath, currentQuery, currentHash } from '../@gluon/router/gluon-router.js';
+import globalStyle from './slidem-deck-global.css' assert { type: 'css' };
+import shadowStyle from './slidem-deck.css' assert { type: 'css' };
+import template from './slidem-deck.html' assert { type: 'html-template' };
 
-import '../fontfaceobserver/fontfaceobserver.standalone.js';
-import '../@gluon/keybinding/gluon-keybinding.js';
+document.adoptedStyleSheets = [...document.adoptedStyleSheets, globalStyle];
+/**
+ * **START**
+ * `#`
+ * non-capturing group (_optional_):
+ *   `slide-`
+ *   named capture group 1 `slide`:
+ *     **0-9** (_>= 1x_)
+ * non-capturing group (_optional_):
+ *   `/step-`
+ *   named capture group 2 `step`:
+ *     Either **0-9** (_>= 1x_) or `Infinity`
+ */
+const STATE_RE = /^#(?:slide-(?<slide>\d+))?(?:\/step-(?<step>\d+|Infinity))?/;
 
-const globalStyleSheet = new CSSStyleSheet();
-globalStyleSheet.replaceSync(`
-  /* SLIDEM GLOBAL STYLES */
-  body {
-    margin: 0;
-  }
+export class SlidemDeck extends HTMLElement {
+  static is = 'slidem-deck';
 
-  [reveal] {
-    opacity: 0;
-    transition: opacity 0.2s;
-  }
+  static #instances = new Set();
 
-  /* Keyframes are defined here to patch a scoping bug in Chrome */
-  @keyframes slidem-fade-in {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
+  // Returns a string representing elapsed time since 'begin'
+  static #timer = begin => {
+    const time = new Date(new Date() - begin);
+    const pad = t => (t < 10 && '0' + t) || t;
+    const hours = pad(time.getUTCHours());
+    const minutes = pad(time.getUTCMinutes());
+    const seconds = pad(time.getUTCSeconds());
+    return `${(time.getUTCHours() && hours + ':') || ''}${minutes}:${seconds}`;
+  };
 
-  @keyframes slidem-fade-out {
-    from { opacity: 1; }
-    to { opacity: 0; }
-  }
+  static #changeLocation({ search = location.search, hash = location.hash } = {}) {
+    const url = new URL(location.href);
+          url.search = new URLSearchParams(search).toString();
+          url.hash = hash;
+    history.pushState({}, '', url.toString());
+    dispatchEvent(new Event('location-changed'));
+    localStorage.setItem('location', location.hash);
+    SlidemDeck.#instances.forEach(i => i.#updateTitle());
+  };
 
-  @keyframes slidem-slide-in-forward {
-    from { translate: 100vw 0; }
-    to { translate: 0 0; }
-  }
+  static initListeners() {
+    function notify(e) { SlidemDeck.#instances.forEach(i => i.#onRouteChange(e)); }
+    addEventListener('hashchange', notify);
+    addEventListener('location-changed', notify);
+    addEventListener('popstate', notify);
 
-  @keyframes slidem-slide-in-backward {
-    from { translate: 0 0; }
-    to { translate: 100vw 0; }
-  }
-
-  @keyframes slidem-slide-out-forward {
-    from { translate: 0 0; }
-    to { translate: -100vw 0; }
-  }
-
-  @keyframes slidem-slide-out-backward {
-    from { translate: -100vw 0; }
-    to { translate: 0 0; }
-  }
-`);
-
-document.adoptedStyleSheets = [...document.adoptedStyleSheets, globalStyleSheet];
-
-const styleSheet = new CSSStyleSheet();
-styleSheet.replaceSync(`
-  :host {
-    /* inset for active slide */
-    --active-inset-block-start: calc(25% - 20px);
-    --active-inset-block-end: calc(25% - 20px);
-    --active-inset-inline-start: calc(5% - 20px);
-    --active-inset-inline-end: calc(45% - 20px);
-
-    /* inset for next slide */
-    --presenter-inset-block-start: calc(32.5% - 20px);
-    --presenter-inset-block-end: calc(32.5% - 20px);
-    --presenter-inset-inline-start: calc(60.5% - 20px);
-    --presenter-inset-inline-end: calc(4.5% - 20px);
-  }
-
-  @keyframes slidem-fade-in {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-
-  @keyframes slidem-fade-out {
-    from { opacity: 1; }
-    to { opacity: 0; }
-  }
-
-  @keyframes slidem-slide-in-forward {
-    from { translate: 100vw 0; }
-    to { translate: 0 0; }
-  }
-
-  @keyframes slidem-slide-in-backward {
-    from { translate: 0 0; }
-    to { translate: 100vw 0; }
-  }
-
-  @keyframes slidem-slide-out-forward {
-    from { translate: 0 0; }
-    to { translate: -100vw 0; }
-  }
-
-  @keyframes slidem-slide-out-backward {
-    from { translate: -100vw 0; }
-    to { translate: 0 0; }
-  }
-
-  :host {
-    display: block;
-    overflow: hidden;
-    position: absolute;
-    inset: 0 0 0 0;
-    font-family: 'sans-serif';
-    font-size: 56px;
-    line-height: 1;
-  }
-
-  .slides ::slotted(*) {
-    position: absolute;
-    inset: 0 0 0 0;
-    animation-duration: 0.4s;
-    animation-fill-mode: both;
-    animation-timing-function: ease-in-out;
-  }
-
-  .slides ::slotted(:not([active]):not([previous]):not([next])) {
-    display: none;
-  }
-
-  :host(:not([presenter])) .slides ::slotted([next]:not([previous])) {
-    display: none;
-  }
-
-  #progress {
-    position: absolute;
-    inset-block-end: 0;
-    inset-inline-start: 0;
-    inset-inline-end: 0;
-    height: 50px;
-    text-align: center;
-    display: flex;
-    flex-flow: row;
-    justify-content: center;
-    z-index: 10;
-  }
-
-  #progress div {
-    height: 8px;
-    width: 8px;
-    border-radius: 50%;
-    border: 2px solid white;
-    margin-left: 6px;
-    margin-right: 6px;
-    background: transparent;
-    transition: background 0.2s, scale 0.2s;
-  }
-
-  #progress div.active {
-    background: white;
-    scale: 1.3
-  }
-
-  :host([progress="dark"]) #progress div {
-    border: 2px solid black;
-  }
-
-  :host([progress="dark"]) #progress div.active {
-    background: black;
-  }
-
-  :host([progress="none"]) #progress {
-    display: none;
-  }
-
-  #timer {
-    display: none;
-    position: absolute;
-    inset-block-start: 5%;
-    inset-inline-end: 5%;
-    color: white;
-    font-size: 4vw;
-    font-weight: bold;
-    font-family: Helvetica, Arial, sans-serif;
-  }
-
-  :host([presenter]) #timer {
-    display: inline;
-  }
-
-  :host([presenter]) {
-    background: black;
-  }
-
-  /* White box around active slide */
-  :host([presenter])::before,
-  :host([presenter])::after {
-    display: block;
-    position: absolute;
-    content: '';
-    border: 2px solid white;
-  }
-
-  :host([presenter])::before {
-    inset-block: var(--active-inset-block-start) var(--active-inset-block-end);
-    inset-inline: var(--active-inset-inline-start) var(--active-inset-inline-end);
-  }
-
-  /* White box around next slide */
-  :host([presenter])::after {
-    inset-block: var(--presenter-inset-block-start) var(--presenter-inset-block-end);
-    inset-inline: var(--presenter-inset-inline-start) var(--presenter-inset-inline-end);
-  }
-
-  :host([presenter]) .slides ::slotted(*) {
-    animation: none !important; /* Block user-configured animations */
-  }
-
-  :host([presenter]) .slides ::slotted([previous]:not([next])) {
-    display: none;
-  }
-
-  :host([presenter]) .slides ::slotted([active]) {
-    translate: -20% 0;
-    scale: 0.5 !important; /* Force presenter layout */
-  }
-
-  :host([presenter]) .slides ::slotted([next]) {
-    translate: 28% 0;
-    scale: 0.35 !important; /* Force presenter layout */
-  }
-
-  :host([presenter]) #progress {
-    translate: -20% 25vh;
-    scale: 0.5;
-  }
-
-  #notes {
-    font-size: 18px;
-    position: absolute;
-    inset-block-start: calc(var(--presenter-inset-block-start) + var(--presenter-inset-block-end) + 80px);
-    inset-inline-start: var(--presenter-inset-inline-start);
-  }
-
-  :host(:not([presenter])) #notes,
-  #notes ::slotted(:not([active])) {
-    display: none !important;
-  }
-
-  .slides ::slotted([active]) {
-    z-index: 2;
-  }
-
-  .slides ::slotted([previous]) {
-    z-index: 0;
-  }
-
-  .slides ::slotted([fade-in][active].animate-forward) {
-    animation-name: slidem-fade-in;
-  }
-
-  .slides ::slotted([fade-in][previous].animate-backward) {
-    animation-name: slidem-fade-out;
-    z-index: 3;
-  }
-
-  .slides ::slotted([fade-out][active].animate-backward) {
-    animation-name: slidem-fade-in;
-  }
-
-  .slides ::slotted([fade-out][previous].animate-forward) {
-    animation-name: slidem-fade-out;
-    z-index: 3;
-  }
-
-  .slides ::slotted([slide-in][active].animate-forward) {
-    animation-name: slidem-slide-in-forward;
-  }
-
-  .slides ::slotted([slide-in][previous].animate-backward) {
-    animation-name: slidem-slide-in-backward;
-    z-index: 3;
-  }
-
-  .slides ::slotted([slide-out][active].animate-backward) {
-    animation-name: slidem-slide-out-backward;
-  }
-
-  .slides ::slotted([slide-out][previous].animate-forward) {
-    animation-name: slidem-slide-out-forward;
-    z-index: 3;
-  }
-`);
-
-export class SlidemDeck extends GluonElement {
-  get template() {
-    return html`
-      <div class="slides" part="slides">
-        <slot id="slides"></slot>
-      </div>
-      <div id="progress" part="progress"><slot name="progress" id="progressSlot"></slot></div>
-      <div id="notes" part="notes"><slot name="notes"></slot></div>
-      <div id="timer" part="timer"></div>
-      <gluon-keybinding id="timerToggle" key="t"></gluon-keybinding>
-      <gluon-keybinding id="presenterToggle" key="p"></gluon-keybinding>
-      <div id="forward">
-        <gluon-keybinding key="PageDown"></gluon-keybinding>
-        <gluon-keybinding key="ArrowRight"></gluon-keybinding>
-        <gluon-keybinding key="Right"></gluon-keybinding>
-        <slot name="forward"></slot>
-      </div>
-      <div id="backward">
-        <gluon-keybinding key="PageUp"></gluon-keybinding>
-        <gluon-keybinding key="ArrowLeft"></gluon-keybinding>
-        <gluon-keybinding key="Left"></gluon-keybinding>
-        <slot name="backward"></slot>
-      </div>
-    `;
-  }
-
-  get presenter() {
-    return this.getAttribute('presenter') !== null;
-  }
-
-  set presenter(value) {
-    if (value) {
-      this.setAttribute('presenter', '');
-    } else {
-      this.removeAttribute('presenter');
-    }
-  }
-
-  get activeSlide() {
-    return this.slides?.[this.currentSlide] ?? null;
-  }
-
-  connectedCallback() {
-    super.connectedCallback();
-    this.shadowRoot.adoptedStyleSheets = [...this.shadowRoot.adoptedStyleSheets, styleSheet];
-    // cache the document title
-    this._originalTitle = document.title;
-
-    // Initialize presenter mode based on the '?presenter' query being present
-    this.presenter = currentQuery() === 'presenter';
-
-    // Enable presenter mode toggle
-    this.$.presenterToggle.addEventListener('click', () => {
-      this.presenter = !this.presenter;
-      changeLocation({ query: (this.presenter && 'presenter') || '', hash: currentHash() });
-    });
-
-    // Presenter mode timer
-    let timerInterval;
-    this.$.timerToggle.addEventListener('click', () => {
-      if (timerInterval) {
-        clearInterval(timerInterval);
-        timerInterval = undefined;
-        this.$.timer.innerText = '';
-      } else {
-        this.$.timer.innerText = '00:00';
-        let begin = new Date();
-        timerInterval = setInterval(() => (this.$.timer.innerText = __timer(begin)), 1000);
+    /**
+     * Shared navigation between browser windows
+     *
+     * Uses the browser localstorage feature to listen to changes in 'location' on any other open browser window,
+     * and matches that location in this instance
+     */
+    addEventListener('storage', ({ key, newValue }) => {
+      if (key === 'location') {
+        if (location.hash !== newValue) {
+          this.#changeLocation({ hash: `${newValue}` });
+        }
       }
     });
 
-    this.slides = Array.from(this.children).filter(item => !item.hasAttribute('slot'));
+    addEventListener('keyup', e => SlidemDeck.#instances.forEach(i => i.#onKeyup(e)));
 
+    /**
+     * Gesture navigation support system
+     *
+     * Allows swiping gestures to navigate between slides
+     * Listens to the 'touchstart' and 'touchend' events to determine if a swipe occurred
+     */
+    let touchX;
+    let touchY;
+
+    document.addEventListener('touchstart', ({ touches: [{ clientX, clientY }] }) => {
+      touchX = clientX;
+      touchY = clientY;
+    }, false);
+
+    document.addEventListener('touchend', e => {
+      const xMove = e.changedTouches[0].clientX - touchX;
+      const yMove = e.changedTouches[0].clientY - touchY;
+      if (Math.abs(xMove) > 60 && Math.abs(xMove) > Math.abs(yMove))
+        this.#instances.forEach(i => xMove < 0 ? i.forward() : i.back());
+    }, false);
+  }
+
+  #timerInterval;
+
+  // cache the document title
+  #originalTitle = document.title;
+
+  get state() { return location.hash.match(STATE_RE)?.groups ?? { slide: 1, step: 1 }; }
+  set state(state) {
+    const { state: old } = this;
+    if (state.slide === old.slide && state.step === old.step) return;
+    state.step ??= old.step;
+    state.slide ??= old.slide;
+    const hash = `#slide-${state.slide}/step-${state.step}`;
+    SlidemDeck.#changeLocation({ hash });
+  }
+
+  get currentStepIndex() { return this.state.step - 1; }
+  get currentSlideIndex() { return this.state.slide - 1; }
+  previousSlideIndex;
+
+  get presenter() { return this.hasAttribute('presenter'); }
+  set presenter(value) { this.toggleAttribute('presenter', !!value); }
+
+  get previousSlide() { return this.slides?.[this.currentSlideIndex - 1] ?? null; }
+  get currentSlide() { return this.slides?.[this.currentSlideIndex] ?? null; }
+  nextSlide;
+
+  #$$(selector) { return this.shadowRoot.querySelectorAll(selector); }
+  get $() { return Object.fromEntries(Array.from(this.#$$('[id]'), el => [el.id, el])); }
+
+  slides;
+
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' }).append(template.content.cloneNode(true));
+    this.shadowRoot.adoptedStyleSheets = [...this.shadowRoot.adoptedStyleSheets, shadowStyle];
+    // Initialize presenter mode based on the '?presenter' query being present
+    this.presenter = new URLSearchParams(location.search).has('presenter');
+  }
+
+  connectedCallback() {
+    SlidemDeck.#instances.add(this);
+    this.slides = Array.from(this.children).filter(item => !item.hasAttribute('slot'));
     // Create dots for progress bar
     this.slides.forEach((slide, i) => {
       this.$.progressSlot.appendChild(document.createElement('div'));
@@ -365,223 +138,190 @@ export class SlidemDeck extends GluonElement {
     });
 
     /**
-     * Routing system
-     *
-     * Handles route changes and displays / animates the slides by changing classes and attributes
-     */
-    onRouteChange(() => {
-      this.activeSlide.step = this.currentStep + 1;
-      this.activeSlide.setAttribute('active', '');
-
-      if (this.presenter) {
-        // set the `active` attr on any notes for this slide
-        this.$.notes
-          .querySelector('slot')
-          .assignedElements()
-          .forEach((note) =>
-            note.toggleAttribute('active', note.getAttribute('slide') == this.currentSlide + 1));
-      }
-
-      if (this.previousSlide === this.currentSlide) {
-        return;
-      }
-
-      if (this.autoTimer)
-        clearInterval(this.autoTimer);
-
-      if (this.activeSlide.auto) {
-        this.autoTimer = setInterval(() => {
-          const { steps, step } = this.activeSlide;
-          this.activeSlide.step = (step === steps + 1) ? 1 : step + 1;
-        }, this.activeSlide.auto);
-      }
-
-      if (this.previousSlide !== undefined) {
-        if (this.previousSlide < this.currentSlide) {
-          this.slides[this.previousSlide].classList.add('animate-forward');
-          this.activeSlide.classList.add('animate-forward');
-          this.slides[this.previousSlide].classList.remove('animate-backward');
-          this.activeSlide.classList.remove('animate-backward');
-        } else {
-          this.slides[this.previousSlide].classList.add('animate-backward');
-          this.activeSlide.classList.add('animate-backward');
-          this.slides[this.previousSlide].classList.remove('animate-forward');
-          this.activeSlide.classList.remove('animate-forward');
-        }
-      }
-
-      if (this.oldNextSlide !== undefined) {
-        this.slides[this.oldNextSlide].removeAttribute('next');
-      }
-
-      this.nextSlide = (this.slides[this.currentSlide + 1] && this.currentSlide + 1) || undefined;
-      if (this.nextSlide !== undefined) {
-        this.slides[this.nextSlide].setAttribute('next', '');
-        this.oldNextSlide = this.nextSlide;
-      }
-
-      if (this.oldPreviousSlide !== undefined) {
-        this.slides[this.oldPreviousSlide].removeAttribute('previous');
-      }
-
-      if (this.previousSlide !== undefined) {
-        this.slides[this.previousSlide].removeAttribute('active');
-        this.slides[this.previousSlide].setAttribute('previous', '');
-        this.$.progressSlot.children[this.previousSlide].classList.remove('active');
-        this.oldPreviousSlide = this.previousSlide;
-      }
-
-      this.$.progressSlot.children[this.currentSlide].classList.add('active');
-
-      this.previousSlide = this.currentSlide;
-    });
-
-    const changeLocation = ({ path = currentPath(), query = currentQuery(), hash = currentHash() } = {}) => {
-      path = window.history.pushState({}, '', `${path}${(query && '?' + query) || ''}${(hash && '#' + hash) || ''}`);
-      window.dispatchEvent(new Event('location-changed'));
-      localStorage.setItem('location', currentHash());
-      if (this.activeSlide.hasAttribute('name'))
-        document.title = this.activeSlide.getAttribute('name') + ' | ' + this._originalTitle;
-      else
-        document.title = this._originalTitle;
-    };
-
-    /**
      * Navigation handlers
      *
      * The 'forward' and 'backward' elements handle click events and navigate to the next/previous step/slide
      */
-    this.$.forward.onclick = () => {
-      if (this.activeSlide.steps && this.activeSlide.step <= this.activeSlide.steps) {
-        changeLocation({ hash: `slide-${this.currentSlide + 1}/step-${this.activeSlide.step + 1}` });
-      } else if (this.currentSlide < this.slides.length - 1) {
-        changeLocation({ hash: `slide-${this.currentSlide + 2}/step-1` });
-      }
-    };
+    this.$.forward.addEventListener('click', () => this.forward());
+    this.$.backward.addEventListener('click', () => this.back());
 
-    this.$.backward.onclick = () => {
-      if (this.activeSlide.steps && this.activeSlide.step > 1) {
-        changeLocation({ hash: `slide-${this.currentSlide + 1}/step-${this.activeSlide.step - 1}` });
-      } else if (this.currentSlide > 0) {
-        changeLocation({ hash: `slide-${this.currentSlide}/step-${(this.slides[this.currentSlide - 1].steps || 0) + 1}` });
-      }
-    };
+    this.#init();
+  }
 
-    /**
-     * Gesture navigation support system
-     *
-     * Allows swiping gestures to navigate between slides
-     * Listens to the 'touchstart' and 'touchend' events to determine if a swipe occurred
-     */
-    let touchX;
-    let touchY;
-    document.addEventListener(
-      'touchstart',
-      e => {
-        touchX = e.touches[0].clientX;
-        touchY = e.touches[0].clientY;
-      },
-      false
-    );
-    document.addEventListener(
-      'touchend',
-      e => {
-        const xMove = e.changedTouches[0].clientX - touchX;
-        const yMove = e.changedTouches[0].clientY - touchY;
-        if (Math.abs(xMove) > 60 && Math.abs(xMove) > Math.abs(yMove)) {
-          if (xMove < 0) {
-            this.$.forward.onclick();
-          } else {
-            this.$.backward.onclick();
-          }
-        }
-      },
-      false
-    );
+  disconnectedCallback() {
+    SlidemDeck.#instances.delete(this);
+  }
 
-    /**
-     * Initialization function
-     *
-     * Displays the application
-     */
-    const init = () => {
-      this.removeAttribute('loading');
-      // Trigger the router to display the current page
-      window.dispatchEvent(new Event('location-changed'));
-    };
-
-    /**
-     * Font loading subsystem.
-     *
-     * It checks the 'font' attribute defined on slidem-deck, and the 'fonts' properties on
-     * all children that are custom elements (which could be custom slide elements).
-     *
-     * It feeds all these fonts to FontFaceObsever, and calls the 'init' function once all fonts
-     * are loaded, or after a 2 second timeout.
-     */
-    const font = this.getAttribute('font');
-    if (font) {
-      this.style.fontFamily = font;
+  /**
+   * Font loading subsystem.
+   *
+   * It checks the 'font' attribute defined on slidem-deck, and the 'fonts' properties on
+   * all children that are custom elements (which could be custom slide elements).
+   *
+   * It calls the 'init' function once all fonts are loaded, or after a 2 second timeout.
+   */
+  async #init() {
+    if (this.getAttribute('font')) {
+      this.style.fontFamily = this.getAttribute('font');
     }
 
-    // Promise that rejects after two seconds
-    let timeOut = new Promise((_, reject) => {
-      let wait = setTimeout(() => {
-        clearTimeout(wait);
-        reject('Font loading timeout');
-      }, 2000);
-    });
-
     // Wait until all child elements that are custom elements are registered in the customElements registry, or the timeOut happens
-    Promise.race([Promise.all(this.slides.map(slide => slide.tagName.includes('-') && customElements.whenDefined(slide.tagName.toLowerCase()))), timeOut])
+    await Promise.race([
+      this.#untilDefined(),
+      this.#loadFonts(),
+      new Promise(r => void setTimeout(r, 2000)),
+    ]);
+
+    this.removeAttribute('loading');
+    // Trigger the router to display the current page
+    window.dispatchEvent(new Event('location-changed'));
+  }
+
+  async #untilDefined() {
+    await Promise.all(this.slides
+      .filter(slide => slide.localName.includes('-'))
+      .map(slide => customElements.whenDefined(slide.localName)));
+  }
+
+  async #loadFonts() {
+    try {
       // Then feed all the 'fonts'  defined in those elements and the font in the slidem-deck to FontFaceObserver
-      .then(() =>
-        Promise.race([
-          Promise.all(
-            this.slides
-              .filter(slide => slide.fonts)
-              .map(slide => slide.fonts)
-              .reduce((fonts, slideFonts) => fonts.concat(slideFonts), (font && [font]) || [])
-              .map(font => new FontFaceObserver(font).load())
-          ),
-          timeOut
-        ])
-      )
-      // Once FontFaceObserver for all fonts is complete or the timeout happens, call init()
-      .then(init, () => console.warn('Failed to initialize fonts') || init());
+      await Promise.all(this.slides
+        .reduce((fonts, slide) => [...fonts, ...(slide.fonts ?? [])], [this.getAttribute('font')].filter(Boolean))
+        .map(font => new FontFace(font).load()));
+    } catch {
+      console.warn('[slidem-deck]: Failed to initialize fonts');
+    }
+  }
 
-    /**
-     * Shared navigation between browser windows
-     *
-     * Uses the browser localstorage feature to listen to changes in 'location' on any other open browser window,
-     * and matches that location in this instance
-     */
-    window.addEventListener('storage', e => {
-      if (e.key === 'location') {
-        if (currentHash() !== e.newValue) {
-          changeLocation({ hash: `${e.newValue}` });
-        }
+  #onKeyup({ key }) {
+    switch (key) {
+      case 'PageDown':
+      case 'ArrowRight':
+        return this.forward();
+      case 'PageUp':
+      case 'ArrowLeft':
+        return this.back();
+      case 't':
+        return this.toggleTimer();
+      case 'p':
+        return this.togglePresenter();
+    }
+  }
+
+  #updateTitle() {
+    if (this.currentSlide.hasAttribute('name'))
+      document.title = this.currentSlide.getAttribute('name') + ' | ' + this.#originalTitle;
+    else
+      document.title = this.#originalTitle;
+  }
+
+  /**
+   * Routing system
+   *
+   * Handles route changes and displays / animates the slides by changing classes and attributes
+   */
+  #onRouteChange() {
+    this.currentSlide.step = this.currentStepIndex + 1;
+    this.currentSlide.setAttribute('active', '');
+
+    if (this.presenter)
+      this.#updateNotes();
+
+    if (this.previousSlideIndex === this.currentSlideIndex)
+      return;
+
+    if (this.autoTimer)
+      clearInterval(this.autoTimer);
+
+    if (this.currentSlide.auto) {
+      this.autoTimer = setInterval(() => {
+        const { steps, step } = this.currentSlide;
+        this.currentSlide.step = (step === steps + 1) ? 1 : step + 1;
+      }, this.currentSlide.auto);
+    }
+
+    if (this.previousSlideIndex !== undefined) {
+      if (this.previousSlideIndex < this.currentSlideIndex) {
+        this.slides[this.previousSlideIndex].classList.add('animate-forward');
+        this.currentSlide.classList.add('animate-forward');
+        this.slides[this.previousSlideIndex].classList.remove('animate-backward');
+        this.currentSlide.classList.remove('animate-backward');
+      } else {
+        this.slides[this.previousSlideIndex].classList.add('animate-backward');
+        this.currentSlide.classList.add('animate-backward');
+        this.slides[this.previousSlideIndex].classList.remove('animate-forward');
+        this.currentSlide.classList.remove('animate-forward');
       }
-    });
+    }
+
+    if (this.oldNextSlide !== undefined)
+      this.slides[this.oldNextSlide].removeAttribute('next');
+
+    const nextIndex = this.currentSlideIndex + 1;
+    this.nextSlide = this.slides[nextIndex] ? nextIndex : undefined;
+
+    if (this.nextSlide !== undefined) {
+      this.slides[this.nextSlide].setAttribute('next', '');
+      this.oldNextSlide = this.nextSlide;
+    }
+
+    if (this.oldPreviousSlide !== undefined)
+      this.slides[this.oldPreviousSlide].removeAttribute('previous');
+
+    if (this.previousSlideIndex !== undefined) {
+      this.slides[this.previousSlideIndex].removeAttribute('active');
+      this.slides[this.previousSlideIndex].setAttribute('previous', '');
+      this.$.progressSlot.children[this.previousSlideIndex].classList.remove('active');
+      this.oldPreviousSlide = this.previousSlideIndex;
+    }
+
+    this.$.progressSlot.children[this.currentSlideIndex].classList.add('active');
+
+    this.previousSlideIndex = this.currentSlideIndex;
   }
 
-  get currentSlide() {
-    return (currentHash().match(/(?:slide-(\d+))?(?:\/step-(\d+|Infinity))?/)[1] || 1) - 1;
+  /** set the `active` attr on any notes for this slide */
+  #updateNotes() {
+    for (const note of this.$.notes.querySelector('slot').assignedElements())
+      note.toggleAttribute('active', note.getAttribute('slide') == this.currentSlideIndex + 1);
   }
-  get currentStep() {
-    return (currentHash().match(/(?:slide-(\d+))?(?:\/step-(\d+|Infinity))?/)[2] || 1) - 1;
+
+  forward() {
+    if (this.currentSlide.steps && this.currentSlide.step <= this.currentSlide.steps) {
+      this.state = { slide: this.currentSlideIndex + 1, step: this.currentSlide.step + 1 };
+    } else if (this.currentSlideIndex < this.slides.length - 1) {
+      this.state = { slide: this.currentSlideIndex + 2, step: 1 };
+    }
+  }
+
+  back() {
+    if (this.currentSlide.steps && this.currentSlide.step > 1) {
+      this.state = { slide: this.currentSlideIndex + 1, step: this.currentSlide.step - 1 };
+    } else if (this.currentSlideIndex > 0) {
+      this.state = { slide: this.currentSlideIndex, step: this.slides[this.currentSlideIndex - 1].steps + 1 };
+    }
+  }
+
+  togglePresenter() {
+    this.presenter = !this.presenter;
+    SlidemDeck.#changeLocation({ search: this.presenter ? '?presenter' : '' });
+  }
+
+  toggleTimer() {
+    if (this.#timerInterval) {
+      clearInterval(this.#timerInterval);
+      this.#timerInterval = undefined;
+      this.$.timer.innerText = '';
+    } else {
+      this.$.timer.innerText = '00:00';
+      let begin = new Date();
+      this.#timerInterval = setInterval(() => (this.$.timer.innerText = SlidemDeck.#timer(begin)), 1000);
+    }
   }
 }
 
-// Returns a string representing elapsed time since 'begin'
-const __timer = begin => {
-  const time = new Date(new Date() - begin);
-  const pad = t => (t < 10 && '0' + t) || t;
-  const hours = pad(time.getUTCHours());
-  const minutes = pad(time.getUTCMinutes());
-  const seconds = pad(time.getUTCSeconds());
-  return `${(time.getUTCHours() && hours + ':') || ''}${minutes}:${seconds}`;
-};
+SlidemDeck.initListeners();
 
 customElements.define(SlidemDeck.is, SlidemDeck);
 

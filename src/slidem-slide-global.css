@@ -1,0 +1,16 @@
+/* SLIDEM BASIC SLIDE STYLE */
+slidem-slide h1,
+slidem-slide h2,
+slidem-slide h3,
+slidem-slide h4,
+slidem-slide h5,
+slidem-slide h6,
+slidem-slide p {
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+slidem-slide a {
+  color: inherit;
+  text-decoration: none;
+}

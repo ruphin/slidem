@@ -1,147 +1,28 @@
-import { GluonElement, html } from '../@gluon/gluon/gluon.js';
+import styleSheet from './slidem-slide-base.css' assert { type: 'css' };
+import globalStyle from './slidem-slide-base-global.css' assert { type: 'css' };
+import template from './slidem-slide-base.html' assert { type: 'html-template' };
 
-const globalStyles = new CSSStyleSheet();
-globalStyles.replaceSync(`
-  /* SLIDEM SLIDE GLOBAL STYLES */
+document.adoptedStyleSheets = [...document.adoptedStyleSheets, globalStyle];
 
-  [reveal] {
-    opacity: 0;
-    transition: opacity 0.2s;
-  }
-
-  [current],
-  [past] {
-    opacity: 1;
-  }
-`);
-
-document.adoptedStyleSheets = [...document.adoptedStyleSheets, globalStyles];
-
-const styleSheet = new CSSStyleSheet();
-styleSheet.replaceSync(`
-  :host {
-    display: flex;
-    flex-direction: row;
-    overflow: hidden;
-    align-items: center;
-    background: var(--background);
-    background-size: cover;
-    background-position: center;
-  }
-
-  :host([zoom-in]) #content, :host([zoom-out]) #content {
-    animation-duration: 0.4s;
-    animation-fill-mode: both;
-    animation-timing-function: ease-in-out;
-  }
-
-  @keyframes zoom-in {
-    from {
-      opacity: 0;
-      scale: 0;
-    }
-    to {
-      opacity: 1;
-      scale: var(--slidem-content-scale, 1);
-    }
-  }
-
-  @keyframes zoom-out {
-    from {
-      opacity: 1;
-      scale: var(--slidem-content-scale, 1);
-    }
-    to {
-      opacity: 0;
-      scale: 0;
-    }
-  }
-
-  :host([zoom-in][active].animate-forward) #content {
-    animation-name: zoom-in;
-  }
-
-  :host([zoom-in][previous].animate-backward) #content {
-    animation-name: zoom-out;
-  }
-
-  :host([zoom-out][previous].animate-forward) #content {
-    animation-name: zoom-out;
-  }
-
-  :host([zoom-out][active].animate-backward) #content {
-    animation-name: zoom-in;
-  }
-
-  #iefix {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  #content {
-    width: var(--slidem-content-width, 1760px);
-    max-height: var(--slidem-content-height, 990px);
-    flex-shrink: 0;
-  }
-
-  :host(:not([center])) #content {
-    height: var(--slidem-content-height, 990px);
-  }
-`);
-
-export class SlidemSlideBase extends GluonElement {
-  get template() {
-    if (this.getAttribute('fullscreen') !== null || this.constructor.fullscreen) {
-      return html`
-        ${(this.constructor.name !== 'SlidemSlide' && this.content) || html`<slot id="slot"></slot>`}
-      `;
-    } else {
-      return html`
-        <div id="iefix" part="container">
-          <div id="content" part="content">
-            ${(this.constructor.name !== 'SlidemSlide' && this.content) || html`<slot id="slot"></slot>`}
-          </div>
-        </div>
-      `;
-    }
-  }
-
-  #steps;
-
-  connectedCallback() {
-    super.connectedCallback();
-    this.#steps = Array.from(this.querySelectorAll('[reveal]'));
-    this.shadowRoot.adoptedStyleSheets = [...this.shadowRoot.adoptedStyleSheets, styleSheet];
-    this.steps = this.#steps.length;
-    this.#resizeContent();
-    this.#steps.forEach((step, i) => step.setAttribute('step', i + 2));
-    if (this.#steps.length)
-      this.#steps[0].previousElementSibling?.setAttribute('step', 1);
-    let resizeTimeout;
-    window.addEventListener('resize', () => {
-      window.clearTimeout(resizeTimeout);
-      resizeTimeout = window.setTimeout(() => {
-        this.#resizeContent();
-      }, 200);
-    });
-  }
-
+export class SlidemSlideBase extends HTMLElement {
   static get observedAttributes() {
     return ['auto', 'step'];
   }
 
-  attributeChangedCallback(attr, oldVal, newVal) {
-    if (attr === 'step') {
-      const step = Number(newVal);
-      if (step > this.steps + 1) {
-        this.setAttribute('step', this.steps + 1);
-        return;
-      }
-      this.#setStep(step);
-    }
+  static #instances = new Set();
+
+  static {
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+      window.clearTimeout(resizeTimeout);
+      resizeTimeout = window.setTimeout(() => {
+        this.#instances.forEach(i => i.#resizeContent());
+      }, 200);
+    });
   }
+
+  #steps;
+  steps;
 
   get auto() {
     if (!this.hasAttribute('auto'))
@@ -163,6 +44,41 @@ export class SlidemSlideBase extends GluonElement {
 
   get step() {
     return Number(this.getAttribute('step')) || 1;
+  }
+
+  get $() {
+    return Object.fromEntries(Array.from(this.shadowRoot.querySelectorAll('[id]'), el => [el.id, el]))
+  }
+
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' }).append(template.content.cloneNode(true));
+    this.shadowRoot.adoptedStyleSheets = [...this.shadowRoot.adoptedStyleSheets, styleSheet];
+  }
+
+  connectedCallback() {
+    SlidemSlideBase.#instances.add(this);
+    this.#steps = Array.from(this.querySelectorAll('[reveal]'));
+    this.steps = this.#steps.length;
+    this.#resizeContent();
+    this.#steps.forEach((step, i) => step.setAttribute('step', i + 2));
+    if (this.#steps.length)
+      this.#steps[0].previousElementSibling?.setAttribute('step', 1);
+  }
+
+  disconnectedCallback() {
+    SlidemSlideBase.#instances.delete(this);
+  }
+
+  attributeChangedCallback(attr, _, newVal) {
+    if (attr === 'step') {
+      const step = Number(newVal);
+      if (step > this.steps + 1) {
+        this.setAttribute('step', this.steps + 1);
+        return;
+      }
+      this.#setStep(step);
+    }
   }
 
   #setStep(step) {

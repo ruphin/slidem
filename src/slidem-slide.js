@@ -1,28 +1,16 @@
 import { SlidemSlideBase } from './slidem-slide-base.js';
 
-const globalStyleSheet = new CSSStyleSheet();
-globalStyleSheet.replaceSync(`
-  /* SLIDEM BASIC SLIDE STYLE */
-  slidem-slide h1,
-  slidem-slide h2,
-  slidem-slide h3,
-  slidem-slide h4,
-  slidem-slide h5,
-  slidem-slide h6,
-  slidem-slide p {
-    margin-top: 0px;
-    margin-bottom: 0px;
-  }
+import globalStyle from './slidem-slide-global.css' assert { type: 'css' };
 
-  slidem-slide a {
-    color: inherit;
-    text-decoration: none;
-  }
-`);
-
-document.adoptedStyleSheets = [...document.adoptedStyleSheets, globalStyleSheet];
+document.adoptedStyleSheets = [...document.adoptedStyleSheets, globalStyle];
 
 export class SlidemSlide extends SlidemSlideBase {
+  static is = 'slidem-slide';
+
+  static get observedAttributes() {
+    return [...SlidemSlideBase.observedAttributes, 'active', 'next'];
+  }
+
   connectedCallback() {
     super.connectedCallback();
     const background = this.getAttribute('background');
@@ -82,12 +70,6 @@ export class SlidemSlide extends SlidemSlideBase {
         layoutNode.style.alignItems = 'center';
       }
     });
-  }
-
-  static get observedAttributes() {
-    const attrs = super.observedAttributes || [];
-    Array.prototype.push.apply(attrs, ['active', 'next']);
-    return attrs;
   }
 
   attributeChangedCallback(attr, oldVal, newVal) {
