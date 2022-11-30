@@ -66,7 +66,7 @@ export class SlidemSlide extends SlidemSlideBase {
       }
       const color = textNode.getAttribute('color');
       if (color !== null) {
-        if (color.match(/^--$/)) {
+        if (color.match(/^--/)) {
           textNode.style.color = `var(${color})`;
         } else {
           textNode.style.color = color;
