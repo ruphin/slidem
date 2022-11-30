@@ -271,6 +271,7 @@ export class SlidemDeck extends HTMLElement {
     this.$.progressSlot.children[this.currentSlideIndex].classList.add('active');
 
     this.previousSlideIndex = this.currentSlideIndex;
+    this.dispatchEvent(new Event('change'));
   }
 
   /** set the `active` attr on any notes for this slide */
