@@ -161,38 +161,38 @@
   z-index: 0;
 }
 
-#slides ::slotted([fade-in][active].animate-forward) {
+#slides ::slotted([in=fade][active].animate-forward) {
   animation-name: slidem-fade-in;
 }
 
-#slides ::slotted([fade-in][previous].animate-backward) {
+#slides ::slotted([in=fade][previous].animate-backward) {
   animation-name: slidem-fade-out;
   z-index: 3;
 }
 
-#slides ::slotted([fade-out][active].animate-backward) {
+#slides ::slotted([out=fade][active].animate-backward) {
   animation-name: slidem-fade-in;
 }
 
-#slides ::slotted([fade-out][previous].animate-forward) {
+#slides ::slotted([out=fade][previous].animate-forward) {
   animation-name: slidem-fade-out;
   z-index: 3;
 }
 
-#slides ::slotted([slide-in][active].animate-forward) {
+#slides ::slotted([in=slide][active].animate-forward) {
   animation-name: slidem-slide-in-forward;
 }
 
-#slides ::slotted([slide-in][previous].animate-backward) {
+#slides ::slotted([in=slide][previous].animate-backward) {
   animation-name: slidem-slide-in-backward;
   z-index: 3;
 }
 
-#slides ::slotted([slide-out][active].animate-backward) {
+#slides ::slotted([out=slide][active].animate-backward) {
   animation-name: slidem-slide-out-backward;
 }
 
-#slides ::slotted([slide-out][previous].animate-forward) {
+#slides ::slotted([out=slide][previous].animate-forward) {
   animation-name: slidem-slide-out-forward;
   z-index: 3;
 }

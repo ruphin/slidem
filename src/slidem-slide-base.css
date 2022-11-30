@@ -8,26 +8,26 @@
   background-position: center;
 }
 
-:host([zoom-in]) #content,
-:host([zoom-out]) #content {
+:host([in=zoom]) #content,
+:host([out=zoom]) #content {
   animation-duration: 0.4s;
   animation-fill-mode: both;
   animation-timing-function: ease-in-out;
 }
 
-:host([zoom-in][active].animate-forward) #content {
+:host([in=zoom][active].animate-forward) #content {
   animation-name: zoom-in;
 }
 
-:host([zoom-in][previous].animate-backward) #content {
+:host([in=zoom][previous].animate-backward) #content {
   animation-name: zoom-out;
 }
 
-:host([zoom-out][previous].animate-forward) #content {
+:host([out=zoom][previous].animate-forward) #content {
   animation-name: zoom-out;
 }
 
-:host([zoom-out][active].animate-backward) #content {
+:host([out=zoom][active].animate-backward) #content {
   animation-name: zoom-in;
 }
 
