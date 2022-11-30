@@ -195,7 +195,7 @@ export class SlidemDeck extends HTMLElement {
       case 'k':
         return this.back();
       case 't':
-        return this.toggleTimer();
+        return this.presenter && this.toggleTimer();
       case 'p':
         return this.togglePresenter();
     }
