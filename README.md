@@ -41,9 +41,27 @@ Add the `in` and, `out` attributes to a `<slidem-slide>` to control its
 transitions. These attributes take one of three values: `fade`, `slide`, or 
 `zoom`.
 
+Add the `reveal` attribute to slide content to have those elements transition in 
+one by one. Link to specific states with the `#slide-${number}/step-${number}` 
+URL hash, e.g. to link to the 3rd slide's 4th step, use `#slide-3/step-4`.
 
 ## Presenter Mode
 
 Press `p` to enter presenter mode. You can add presenter notes to your slides by 
 slotting them into the `notes` slot. While in presenter mode, press `t` to 
 toggle the slide timer.
+
+## Colours and Typography
+
+Slidem provides some HTML extensions to make it easy to quickly style your 
+slides. You can of course use CSS to do the same.
+
+Add `fit` to any content element (e.g. `<p>`, `<h2>` or `<strong>`) to have it 
+grow to fill the slide width. Add `uppercase` to transform it to uppercase. Use 
+the `color` attribute to change it's color. Add `line-height` to change an 
+element's line height.
+
+Use the `background` attribute on `<slidem-slide>` to set the background. it's 
+value can be a CSS colour value, a CSS Custom Property name, or a URL to an 
+image.
+
