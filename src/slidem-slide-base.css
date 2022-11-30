@@ -1,7 +1,6 @@
 :host {
   display: flex;
-  width: 100%;
-  flex-direction: column;
+  flex-direction: row;
   overflow: hidden;
   align-items: center;
   background: var(--background, white);
@@ -9,10 +8,44 @@
   background-position: center;
 }
 
-:host([zoom-in]) #content, :host([zoom-out]) #content {
+:host([zoom-in]) #content,
+:host([zoom-out]) #content {
   animation-duration: 0.4s;
   animation-fill-mode: both;
   animation-timing-function: ease-in-out;
+}
+
+:host([zoom-in][active].animate-forward) #content {
+  animation-name: zoom-in;
+}
+
+:host([zoom-in][previous].animate-backward) #content {
+  animation-name: zoom-out;
+}
+
+:host([zoom-out][previous].animate-forward) #content {
+  animation-name: zoom-out;
+}
+
+:host([zoom-out][active].animate-backward) #content {
+  animation-name: zoom-in;
+}
+
+:host(:not([center])) #content {
+  height: var(--slidem-content-height, 990px);
+}
+
+#container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+#content {
+  width: var(--slidem-content-width, 1760px);
+  max-height: var(--slidem-content-height, 990px);
+  flex-shrink: 0;
 }
 
 @keyframes zoom-in {
@@ -37,28 +70,3 @@
   }
 }
 
-:host([zoom-in][active].animate-forward) #content {
-  animation-name: zoom-in;
-}
-
-:host([zoom-in][previous].animate-backward) #content {
-  animation-name: zoom-out;
-}
-
-:host([zoom-out][previous].animate-forward) #content {
-  animation-name: zoom-out;
-}
-
-:host([zoom-out][active].animate-backward) #content {
-  animation-name: zoom-in;
-}
-
-#content {
-  width: var(--slidem-content-width, 1760px);
-  max-height: var(--slidem-content-height, 990px);
-  flex-shrink: 0;
-}
-
-:host(:not([center])) #content {
-  height: var(--slidem-content-height, 990px);
-}

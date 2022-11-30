@@ -1,8 +1,5 @@
 import styleSheet from './slidem-slide-base.css' assert { type: 'css' };
-import globalStyle from './slidem-slide-base-global.css' assert { type: 'css' };
 import template from './slidem-slide-base.html' assert { type: 'html-template' };
-
-document.adoptedStyleSheets = [...document.adoptedStyleSheets, globalStyle];
 
 export class SlidemSlideBase extends HTMLElement {
   static get observedAttributes() {

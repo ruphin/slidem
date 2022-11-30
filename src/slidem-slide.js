@@ -1,9 +1,5 @@
 import { SlidemSlideBase } from './slidem-slide-base.js';
 
-import globalStyle from './slidem-slide-global.css' assert { type: 'css' };
-
-document.adoptedStyleSheets = [...document.adoptedStyleSheets, globalStyle];
-
 export class SlidemSlide extends SlidemSlideBase {
   static is = 'slidem-slide';
 
@@ -16,60 +12,46 @@ export class SlidemSlide extends SlidemSlideBase {
     const background = this.getAttribute('background');
     if (background) {
       if (background.match(/^--/)) {
-        this.style.setProperty('--background', `var(${background})`);
+        this.style.setProperty('background', `var(${background})`);
       } else if (background.match(/^(http|\/|\.)/)) {
         let image = `url(${background})`;
         const darken = this.getAttribute('darken-background');
-        if (darken) {
+        if (darken)
           image = `linear-gradient(rgba(0,0,0,${darken}), rgba(0,0,0,${darken})), ${image}`;
-        }
         this.style.backgroundImage = image;
       } else {
-        this.style.setProperty('--background', background);
+        this.style.setProperty('background', background);
       }
     }
 
-    this.textNodes = Array.from(this.querySelectorAll('h1, h2, h3, h4, h5, h6, p, li, span, em, strong, small'));
-    this.textNodes.forEach(textNode => {
-      if (textNode.hasAttribute('font-size')) {
-        textNode.style.fontSize = textNode.getAttribute('font-size');
-      }
-      if (textNode.hasAttribute('bold')) {
-        textNode.style.fontWeight = 'bold';
-      }
-      if (textNode.hasAttribute('underline')) {
-        textNode.style.textDecoration = 'underline';
-      }
-      if (textNode.hasAttribute('italic')) {
-        textNode.style.fontStyle = 'italic';
-      }
-      if (textNode.hasAttribute('uppercase')) {
-        textNode.style.textTransform = 'uppercase';
-      }
-      if (textNode.hasAttribute('center')) {
-        textNode.style.textAlign = 'center';
-      }
-      if (textNode.hasAttribute('line-height')) {
-        textNode.style.lineHeight = textNode.getAttribute('line-height');
-      }
-      const color = textNode.getAttribute('color');
+    this.contentNodes = Array.from(this.querySelectorAll('h1, h2, h3, h4, h5, h6, p, li, span, em, strong, small'));
+
+    for (const node of this.contentNodes) {
+      if (node.hasAttribute('font-size'))   node.style.fontSize =  node.getAttribute('font-size');
+      if (node.hasAttribute('bold'))        node.style.fontWeight = 'bold';
+      if (node.hasAttribute('underline'))   node.style.textDecoration = 'underline';
+      if (node.hasAttribute('italic'))      node.style.fontStyle = 'italic';
+      if (node.hasAttribute('uppercase'))   node.style.textTransform = 'uppercase';
+      if (node.hasAttribute('center'))      node.style.textAlign = 'center';
+      if (node.hasAttribute('line-height')) node.style.lineHeight = node.getAttribute('line-height');
+
+      const color = node.getAttribute('color');
       if (color !== null) {
         if (color.match(/^--/)) {
-          textNode.style.color = `var(${color})`;
+          node.style.color = `var(${color})`;
         } else {
-          textNode.style.color = color;
+          node.style.color = color;
         }
       }
-    });
+    }
 
-    this.layoutNodes = Array.from(this.querySelectorAll('div'));
-    this.layoutNodes.forEach(layoutNode => {
-      if (layoutNode.getAttribute('center') !== null) {
-        layoutNode.style.display = 'flex';
-        layoutNode.style.justifyContent = 'center';
-        layoutNode.style.alignItems = 'center';
+    for (const node of this.querySelectorAll('div')) {
+      if (node.getAttribute('center') !== null) {
+        node.style.display = 'flex';
+        node.style.justifyContent = 'center';
+        node.style.alignItems = 'center';
       }
-    });
+    }
   }
 
   attributeChangedCallback(attr, oldVal, newVal) {
@@ -85,15 +67,15 @@ export class SlidemSlide extends SlidemSlideBase {
 
   #rescale() {
     requestAnimationFrame(() => {
-      this.textNodes.forEach(textNode => {
-        if (textNode.getAttribute('fit') !== null) {
-          textNode.style.display = 'table';
-          textNode.style.whiteSpace = 'nowrap';
-          const refFontSize = parseFloat(window.getComputedStyle(textNode, null).getPropertyValue('font-size'));
+      for (const node of this.contentNodes) {
+        if (node.hasAttribute('fit')) {
+          node.style.display = 'table';
+          node.style.whiteSpace = 'nowrap';
+          const refFontSize = parseFloat(window.getComputedStyle(node, null).getPropertyValue('font-size'));
           const refWidth = this.$.content.clientWidth;
-          textNode.style.fontSize = `${Math.floor((refFontSize * refWidth) / textNode.clientWidth)}px`;
+          node.style.fontSize = `${Math.floor((refFontSize * refWidth) / node.clientWidth)}px`;
         }
-      });
+      }
     });
   }
 }

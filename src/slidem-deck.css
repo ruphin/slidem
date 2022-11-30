@@ -12,36 +12,6 @@
   --presenter-inset-inline-end: calc(4.5% - 20px);
 }
 
-@keyframes slidem-fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes slidem-fade-out {
-  from { opacity: 1; }
-  to { opacity: 0; }
-}
-
-@keyframes slidem-slide-in-forward {
-  from { translate: 100vw 0; }
-  to { translate: 0 0; }
-}
-
-@keyframes slidem-slide-in-backward {
-  from { translate: 0 0; }
-  to { translate: 100vw 0; }
-}
-
-@keyframes slidem-slide-out-forward {
-  from { translate: 0 0; }
-  to { translate: -100vw 0; }
-}
-
-@keyframes slidem-slide-out-backward {
-  from { translate: -100vw 0; }
-  to { translate: 0 0; }
-}
-
 :host {
   display: block;
   overflow: hidden;
@@ -52,7 +22,7 @@
   line-height: 1;
 }
 
-.slides ::slotted(*) {
+#slides ::slotted(*) {
   position: absolute;
   inset: 0 0 0 0;
   animation-duration: 0.4s;
@@ -60,11 +30,11 @@
   animation-timing-function: ease-in-out;
 }
 
-.slides ::slotted(:not([active]):not([previous]):not([next])) {
+#slides ::slotted(:not([active]):not([previous]):not([next])) {
   display: none;
 }
 
-:host(:not([presenter])) .slides ::slotted([next]:not([previous])) {
+:host(:not([presenter])) #slides ::slotted([next]:not([previous])) {
   display: none;
 }
 
@@ -148,20 +118,20 @@
   inset-inline: var(--presenter-inset-inline-start) var(--presenter-inset-inline-end);
 }
 
-:host([presenter]) .slides ::slotted(*) {
+:host([presenter]) #slides ::slotted(*) {
   animation: none !important; /* Block user-configured animations */
 }
 
-:host([presenter]) .slides ::slotted([previous]:not([next])) {
+:host([presenter]) #slides ::slotted([previous]:not([next])) {
   display: none;
 }
 
-:host([presenter]) .slides ::slotted([active]) {
+:host([presenter]) #slides ::slotted([active]) {
   translate: -20% 0;
   scale: 0.5 !important; /* Force presenter layout */
 }
 
-:host([presenter]) .slides ::slotted([next]) {
+:host([presenter]) #slides ::slotted([next]) {
   translate: 28% 0;
   scale: 0.35 !important; /* Force presenter layout */
 }
@@ -183,46 +153,77 @@
   display: none !important;
 }
 
-.slides ::slotted([active]) {
+#slides ::slotted([active]) {
   z-index: 2;
 }
 
-.slides ::slotted([previous]) {
+#slides ::slotted([previous]) {
   z-index: 0;
 }
 
-.slides ::slotted([fade-in][active].animate-forward) {
+#slides ::slotted([fade-in][active].animate-forward) {
   animation-name: slidem-fade-in;
 }
 
-.slides ::slotted([fade-in][previous].animate-backward) {
+#slides ::slotted([fade-in][previous].animate-backward) {
   animation-name: slidem-fade-out;
   z-index: 3;
 }
 
-.slides ::slotted([fade-out][active].animate-backward) {
+#slides ::slotted([fade-out][active].animate-backward) {
   animation-name: slidem-fade-in;
 }
 
-.slides ::slotted([fade-out][previous].animate-forward) {
+#slides ::slotted([fade-out][previous].animate-forward) {
   animation-name: slidem-fade-out;
   z-index: 3;
 }
 
-.slides ::slotted([slide-in][active].animate-forward) {
+#slides ::slotted([slide-in][active].animate-forward) {
   animation-name: slidem-slide-in-forward;
 }
 
-.slides ::slotted([slide-in][previous].animate-backward) {
+#slides ::slotted([slide-in][previous].animate-backward) {
   animation-name: slidem-slide-in-backward;
   z-index: 3;
 }
 
-.slides ::slotted([slide-out][active].animate-backward) {
+#slides ::slotted([slide-out][active].animate-backward) {
   animation-name: slidem-slide-out-backward;
 }
 
-.slides ::slotted([slide-out][previous].animate-forward) {
+#slides ::slotted([slide-out][previous].animate-forward) {
   animation-name: slidem-slide-out-forward;
   z-index: 3;
 }
+
+@keyframes slidem-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slidem-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes slidem-slide-in-forward {
+  from { translate: 100vw 0; }
+  to { translate: 0 0; }
+}
+
+@keyframes slidem-slide-in-backward {
+  from { translate: 0 0; }
+  to { translate: 100vw 0; }
+}
+
+@keyframes slidem-slide-out-forward {
+  from { translate: 0 0; }
+  to { translate: -100vw 0; }
+}
+
+@keyframes slidem-slide-out-backward {
+  from { translate: -100vw 0; }
+  to { translate: 0 0; }
+}
+

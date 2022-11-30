@@ -198,9 +198,13 @@ export class SlidemDeck extends HTMLElement {
     switch (key) {
       case 'PageDown':
       case 'ArrowRight':
+      case 'j':
+      case 'l':
         return this.forward();
       case 'PageUp':
       case 'ArrowLeft':
+      case 'h':
+      case 'k':
         return this.back();
       case 't':
         return this.toggleTimer();
