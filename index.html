@@ -27,119 +27,6 @@
   slidem-deck[loading] {
     opacity: 0;
   }
-
-  .polymersummit {
-    background: #2e9be6;
-    font-family: 'Roboto';
-  }
-
-  .polymersummit::part(content) {
-    border-bottom: 3px solid white;
-    color: white;
-    position: relative;
-    height: 100%;
-  }
-
-  .polymersummit::part(content)::before {
-    content: '';
-    display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 34px;
-    background: rgba(0, 0, 0, 0.2);
-  }
-
-  .polymersummit .side {
-    position: absolute;
-    right: 0;
-    width: 340px;
-    height: 100%;
-    display: flex;
-    flex-flow: column;
-    justify-content: flex-end;
-  }
-
-  .polymersummit .side * {
-    flex-shrink: 0;
-  }
-
-  .polymersummit .event {
-    position: absolute;
-    bottom: 26px;
-    left: 0;
-    margin: 0;
-    font-size: 24px;
-    letter-spacing: 1px;
-    font-weight: 700;
-  }
-
-  .polymersummit .avatar {
-    height: 340px;
-    width: 340px;
-    border-radius: 50%;
-    overflow: hidden;
-    margin-bottom: 56px;
-    max-width: 340px;
-  }
-
-  .polymersummit .speaker {
-    border-top: 3px solid white;
-    padding-top: 50px;
-    padding-bottom: 30px;
-    margin-bottom: 20px;
-  }
-
-  .polymersummit .speaker .name {
-    font-weight: 400;
-    margin-top: 0;
-    margin-bottom: 20px;
-    font-size: 32px;
-    letter-spacing: 1px;
-  }
-
-  .polymersummit .speaker .email,
-  .polymersummit .speaker .twitter {
-    color: white;
-    font-weight: 500;
-    font-size: 28px;
-    letter-spacing: 1px;
-  }
-
-  .polymersummit .logo {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 260px;
-    background-color: white;
-    background-position: center;
-    background-size: contain;
-  }
-
-  .polymersummit .logo img {
-    max-height: 200px;
-    max-width: 300px;
-  }
-
-  .polymersummit .title {
-    margin-top: 190px;
-    margin-bottom: 0;
-    font-weight: 500;
-    font-size: 150px;
-    color: white;
-    letter-spacing: 2px;
-  }
-  .polymersummit .subtitle {
-    display: inline-block;
-    margin-top: 40px;
-    font-weight: 400;
-    font-size: 100px;
-    letter-spacing: 2px;
-    color: white;
-    padding-top: 40px;
-    border-top: 3px solid white;
-  }
 </style>
 
 <slidem-deck font="Open Sans Condensed" loading>
@@ -177,22 +64,16 @@
     <p fit uppercase reveal color="--primary">Background imagery</p>
   </slidem-slide>
 
-  <slidem-slide class="polymersummit">
-    <div class="side">
-      <img class="avatar" src="/images/avatar.jpg" alt="Goffert looking up and to the side, outside in downtown Copenhagen on a sunny day">
-        <div class="speaker">
-          <p class="name">Goffert van Gool</p>
-          <a class="email">ruphin@ruphin.net</a>
-          <a class="social">@ruphin_</a>
-        </div>
-      <div class="logo">
-        <img src="/images/polymer.png" alt="Polymer Logo">
-      </div>
-    </div>
-    <p class="event">Polymer Summit Copenhagen 2017</p>
-    <h2 class="title">Custom Styling</h2>
-    <p reveal class="subtitle">Design with HTML and CSS</p>
-  </slidem-slide>
+  <slidem-speaker-slide>
+    <h2 slot="title">Custom Slides</h2>
+    <p slot="subtitle" reveal>Design with HTML and CSS</p>
+    <p slot="name">Goffert van Gool</p>
+    <a slot="email">ruphin@ruphin.net</a>
+    <a slot="social">@ruphin_</a>
+    <p slot="event">Polymer Summit Copenhagen 2017</p>
+    <img slot="logo" src="/images/polymer.png" alt="Polymer Logo">
+    <img slot="avatar" src="/images/avatar.jpg" alt="Goffert looking up and to the side, outside in downtown Copenhagen on a sunny day">
+  </slidem-speaker-slide>
 
   <slidem-slide center in="slide" darken-background=".8" background="/images/presenter.jpg">
     <h2 uppercase font-size="158px" line-height="1.8" color="white">Other features include</h2>
@@ -224,3 +105,180 @@
     <p style="text-align: right;">(soon)</p>
   </slidem-slide>
 </slidem-deck>
+
+<template id="speaker-slide-template">
+  <div class="introSlide">
+    <div class="side">
+      <div class="avatar"><slot name="avatar"></slot></div>
+      <div class="speakerDetails">
+        <slot name="speaker"></slot>
+        <div>
+          <slot name="email"></slot>
+        </div>
+        <div>
+          <slot name="twitter"></slot>
+        </div>
+      </div>
+      <div class="logo">
+        <slot name="logo"></slot>
+      </div>
+    </div>
+    <div class="event">
+      <slot name="event"></slot>
+    </div>
+    <slot name="title"></slot>
+    <slot name="subtitle"></slot>
+  </div>
+</template>
+
+<template id="speaker-slide-style">
+  <style>
+    #container::before {
+      content: '';
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 34px;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    :host {
+      background: #2e9be6;
+      font-family: 'Roboto';
+    }
+
+    .introSlide {
+      overflow: hidden;
+      border-bottom: 3px solid white;
+      color: white;
+      position: relative;
+      height: 100%;
+    }
+
+    .topShade {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 34px;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .introSlide .event {
+      position: absolute;
+      bottom: 26px;
+      left: 0;
+    }
+
+    .introSlide .event ::slotted([slot="event"]) {
+      margin: 0;
+      font-size: 24px;
+      letter-spacing: 1px;
+      font-weight: 700;
+    }
+
+    .introSlide .side {
+      position: absolute;
+      right: 0;
+      width: 340px;
+      height: 100%;
+      display: flex;
+      flex-flow: column;
+      justify-content: flex-end;
+    }
+
+    .introSlide .side * {
+      flex-shrink: 0;
+    }
+
+    .introSlide .avatar {
+      height: 340px;
+      width: 340px;
+      border-radius: 50%;
+      overflow: hidden;
+      margin-bottom: 56px;
+    }
+
+    .introSlide ::slotted([slot="avatar"]) {
+      max-width: 340px;
+    }
+
+    .introSlide .speakerDetails {
+      border-top: 3px solid white;
+      padding-top: 50px;
+      padding-bottom: 30px;
+    }
+
+    .introSlide .speakerDetails ::slotted([slot="speaker"]) {
+      font-weight: 400;
+      margin-top: 0;
+      margin-bottom: 20px;
+      font-size: 32px;
+      letter-spacing: 1px;
+    }
+
+    .introSlide .speakerDetails div {
+      margin-bottom: 20px;
+    }
+
+    .introSlide .speakerDetails div ::slotted([slot="email"]),
+    .introSlide .speakerDetails div ::slotted([slot="twitter"]) {
+      color: white;
+      font-weight: 500;
+      font-size: 28px;
+      letter-spacing: 1px;
+    }
+
+    .introSlide .logo {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 260px;
+      background-color: white;
+    }
+
+    .introSlide .logo ::slotted([slot="logo"]) {
+      max-height: 200px;
+      max-width: 300px;
+      background-position: center;
+      background-size: contain;
+    }
+
+    .introSlide ::slotted([slot="title"]) {
+      margin-top: 190px;
+      margin-bottom: 0;
+      font-weight: 500;
+      font-size: 150px;
+      color: white;
+      letter-spacing: 2px;
+    }
+
+    .introSlide ::slotted([slot="subtitle"]) {
+      display: inline-block;
+      margin-top: 40px;
+      font-weight: 400;
+      font-size: 100px;
+      letter-spacing: 2px;
+      color: white;
+      padding-top: 40px;
+      border-top: 3px solid white;
+    }
+  </style>
+</template>
+
+<script type="module">
+  import {SlidemSlide} from '../slidem-slide.js';
+  const template = document.getElementById('speaker-slide-template');
+  const style = (document.getElementById('speaker-slide-style').content.querySelector('style'))
+  const sheet = new CSSStyleSheet();
+        sheet.replaceSync(style.textContent);
+  customElements.define('slidem-speaker-slide', class SlidemSpeakerSlide extends SlidemSlide {
+    constructor() {
+      super();
+      this.shadowRoot.getElementById('content').append(template.content.cloneNode(true));
+      this.shadowRoot.adoptedStyleSheets = [...this.shadowRoot.adoptedStyleSheets, sheet];
+    }
+  });
+</script>
