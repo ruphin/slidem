@@ -44,9 +44,9 @@ export class SlidemDeck extends HTMLElement {
 
   static initListeners() {
     function notify(e) { SlidemDeck.#instances.forEach(i => i.#onRouteChange(e)); }
-    addEventListener('hashchange', notify);
-    addEventListener('location-changed', notify);
-    addEventListener('popstate', notify);
+    window.addEventListener('hashchange', notify);
+    window.addEventListener('location-changed', notify);
+    window.addEventListener('popstate', notify);
 
     /**
      * Shared navigation between browser windows
@@ -54,7 +54,7 @@ export class SlidemDeck extends HTMLElement {
      * Uses the browser localstorage feature to listen to changes in 'location' on any other open browser window,
      * and matches that location in this instance
      */
-    addEventListener('storage', ({ key, newValue }) => {
+    window.addEventListener('storage', ({ key, newValue }) => {
       if (key === 'location') {
         if (location.hash !== newValue) {
           this.#changeLocation({ hash: `${newValue}` });
@@ -62,7 +62,7 @@ export class SlidemDeck extends HTMLElement {
       }
     });
 
-    addEventListener('keyup', e => SlidemDeck.#instances.forEach(i => i.#onKeyup(e)));
+    window.addEventListener('keyup', e => SlidemDeck.#instances.forEach(i => i.#onKeyup(e)));
 
     /**
      * Gesture navigation support system
