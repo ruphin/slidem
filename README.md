@@ -65,3 +65,30 @@ Use the `background` attribute on `<slidem-slide>` to set the background. it's
 value can be a CSS colour value, a CSS Custom Property name, or a URL to an 
 image.
 
+## Custom Slide Templates
+
+You can create your own custom slide types by extending from `SlidemSlide`. An 
+easy way to add slots to your slide's shadow root is to append your custom 
+template to the slide's existing `#container` element.
+
+```js
+import {SlidemSlide} from '../slidem-slide.js';
+const template = document.getElementById('speaker-slide-template');
+const style = document.getElementById('speaker-slide-style')
+                .content.querySelector('style');
+const sheet = new CSSStyleSheet();
+      sheet.replaceSync(style.textContent);
+
+class SlidemSpeakerSlide extends SlidemSlide {
+  static is = 'slidem-speaker-slide';
+  constructor() {
+    super();
+    this.shadowRoot.getElementById('content').append(template.content.cloneNode(true));
+    this.shadowRoot.adoptedStyleSheets = [...this.shadowRoot.adoptedStyleSheets, sheet];
+  }
+}
+
+customElements.define(SlidemSpeakerSlide.id, SlidemSpeakerSlide);
+```
+
+See [`index.html`](./blob/master/index.html) for a complete example.
