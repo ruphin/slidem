@@ -220,57 +220,56 @@ export class SlidemDeck extends HTMLElement {
     if (this.presenter)
       this.#updateNotes();
 
-    if (this.previousSlideIndex === this.currentSlideIndex)
-      return;
+    if (this.previousSlideIndex !== this.currentSlideIndex) {
+      if (this.autoTimer)
+        clearInterval(this.autoTimer);
 
-    if (this.autoTimer)
-      clearInterval(this.autoTimer);
-
-    if (this.currentSlide.auto) {
-      this.autoTimer = setInterval(() => {
-        const { steps, step } = this.currentSlide;
-        this.currentSlide.step = (step === steps + 1) ? 1 : step + 1;
-      }, this.currentSlide.auto);
-    }
-
-    if (this.previousSlideIndex !== undefined) {
-      if (this.previousSlideIndex < this.currentSlideIndex) {
-        this.slides[this.previousSlideIndex].classList.add('animate-forward');
-        this.currentSlide.classList.add('animate-forward');
-        this.slides[this.previousSlideIndex].classList.remove('animate-backward');
-        this.currentSlide.classList.remove('animate-backward');
-      } else {
-        this.slides[this.previousSlideIndex].classList.add('animate-backward');
-        this.currentSlide.classList.add('animate-backward');
-        this.slides[this.previousSlideIndex].classList.remove('animate-forward');
-        this.currentSlide.classList.remove('animate-forward');
+      if (this.currentSlide.auto) {
+        this.autoTimer = setInterval(() => {
+          const { steps, step } = this.currentSlide;
+          this.currentSlide.step = (step === steps + 1) ? 1 : step + 1;
+        }, this.currentSlide.auto);
       }
+
+      if (this.previousSlideIndex !== undefined) {
+        if (this.previousSlideIndex < this.currentSlideIndex) {
+          this.slides[this.previousSlideIndex].classList.add('animate-forward');
+          this.currentSlide.classList.add('animate-forward');
+          this.slides[this.previousSlideIndex].classList.remove('animate-backward');
+          this.currentSlide.classList.remove('animate-backward');
+        } else {
+          this.slides[this.previousSlideIndex].classList.add('animate-backward');
+          this.currentSlide.classList.add('animate-backward');
+          this.slides[this.previousSlideIndex].classList.remove('animate-forward');
+          this.currentSlide.classList.remove('animate-forward');
+        }
+      }
+
+      if (this.oldNextSlide !== undefined)
+        this.slides[this.oldNextSlide].removeAttribute('next');
+
+      const nextIndex = this.currentSlideIndex + 1;
+      this.nextSlide = this.slides[nextIndex] ? nextIndex : undefined;
+
+      if (this.nextSlide !== undefined) {
+        this.slides[this.nextSlide].setAttribute('next', '');
+        this.oldNextSlide = this.nextSlide;
+      }
+
+      if (this.oldPreviousSlide !== undefined)
+        this.slides[this.oldPreviousSlide].removeAttribute('previous');
+
+      if (this.previousSlideIndex !== undefined) {
+        this.slides[this.previousSlideIndex].removeAttribute('active');
+        this.slides[this.previousSlideIndex].setAttribute('previous', '');
+        this.$.progressSlot.children[this.previousSlideIndex].classList.remove('active');
+        this.oldPreviousSlide = this.previousSlideIndex;
+      }
+
+      this.$.progressSlot.children[this.currentSlideIndex].classList.add('active');
+
+      this.previousSlideIndex = this.currentSlideIndex;
     }
-
-    if (this.oldNextSlide !== undefined)
-      this.slides[this.oldNextSlide].removeAttribute('next');
-
-    const nextIndex = this.currentSlideIndex + 1;
-    this.nextSlide = this.slides[nextIndex] ? nextIndex : undefined;
-
-    if (this.nextSlide !== undefined) {
-      this.slides[this.nextSlide].setAttribute('next', '');
-      this.oldNextSlide = this.nextSlide;
-    }
-
-    if (this.oldPreviousSlide !== undefined)
-      this.slides[this.oldPreviousSlide].removeAttribute('previous');
-
-    if (this.previousSlideIndex !== undefined) {
-      this.slides[this.previousSlideIndex].removeAttribute('active');
-      this.slides[this.previousSlideIndex].setAttribute('previous', '');
-      this.$.progressSlot.children[this.previousSlideIndex].classList.remove('active');
-      this.oldPreviousSlide = this.previousSlideIndex;
-    }
-
-    this.$.progressSlot.children[this.currentSlideIndex].classList.add('active');
-
-    this.previousSlideIndex = this.currentSlideIndex;
     this.dispatchEvent(new Event('change'));
   }
 
