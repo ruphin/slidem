@@ -1,41 +1,23 @@
-import { html } from '../@gluon/gluon/gluon.js';
 import { SlidemSlideBase } from './slidem-slide-base.js';
 
+import shadowStyle from './slidem-video-slide.css' assert { type: 'css' };
+import template from './slidem-video-slide.html' assert { type: 'html-template' };
+
 export class SlidemVideoSlide extends SlidemSlideBase {
-  get template() {
-    this.content = html`
-      <video controls id="video"></video>
-    `;
+  static is = 'slidem-video-slide';
 
-    return html`
-      <style>
-        :host {
-          background: black;
-          color: white;
-        }
+  static observedAttributes = [...SlidemSlideBase.observedAttributes, 'active'];
 
-        video {
-          width: 100%;
-          max-height: 100%;
-          max-width: 100%;
-        }
-      </style>
-      ${super.template}
-    `;
-  }
-  connectedCallback() {
-    super.connectedCallback();
+  constructor() {
+    super();
+    this.shadowRoot.adoptedStyleSheets = [...this.shadowRoot.adoptedStyleSheets, shadowStyle];
+    this.$.content.replaceChild(template.content.cloneNode(true), this.$.slot);
     this.$.video.src = this.getAttribute('video');
-    this.$.video.muted = this.getAttribute('muted') !== null;
+    this.$.video.muted = this.hasAttribute('muted');
   }
 
-  static get observedAttributes() {
-    const attrs = super.observedAttributes || [];
-    Array.prototype.push.apply(attrs, ['active']);
-    return attrs;
-  }
-  attributeChangedCallback(attr, oldVal, newVal) {
-    super.attributeChangedCallback(attr, oldVal, newVal);
+  attributeChangedCallback(attr, _, newVal) {
+    super.attributeChangedCallback(attr, _, newVal);
     if (attr === 'active') {
       if (newVal !== null) {
         this.$.video.currentTime = 0;

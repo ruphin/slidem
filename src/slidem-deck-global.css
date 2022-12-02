@@ -1,0 +1,69 @@
+/* SLIDEM GLOBAL STYLES */
+body {
+  margin: 0;
+}
+
+slidem-deck [reveal] {
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+/* SLIDEM SLIDE GLOBAL STYLES */
+
+slidem-deck [reveal] {
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+slidem-deck [current],
+slidem-deck [past] {
+  opacity: 1;
+}
+/* SLIDEM BASIC SLIDE STYLE */
+slidem-slide h1,
+slidem-slide h2,
+slidem-slide h3,
+slidem-slide h4,
+slidem-slide h5,
+slidem-slide h6,
+slidem-slide p {
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+slidem-slide a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Keyframes are defined here to patch a scoping bug in Chrome */
+@keyframes slidem-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slidem-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes slidem-slide-in-forward {
+  from { translate: 100vw 0; }
+  to { translate: 0 0; }
+}
+
+@keyframes slidem-slide-in-backward {
+  from { translate: 0 0; }
+  to { translate: 100vw 0; }
+}
+
+@keyframes slidem-slide-out-forward {
+  from { translate: 0 0; }
+  to { translate: -100vw 0; }
+}
+
+@keyframes slidem-slide-out-backward {
+  from { translate: -100vw 0; }
+  to { translate: 0 0; }
+}
+

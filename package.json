@@ -1,41 +1,31 @@
 {
   "name": "slidem",
-  "version": "1.2.8",
+  "version": "2.0.0",
   "description": "A Web Component based slide deck",
-  "main": "slidem-deck.js",
-  "umd:main": "slidem-deck.umd.js",
-  "module": "slidem-deck.js",
-  "jsnext:main": "slidem-deck.js",
+  "main": "slidem.js",
+  "module": "slidem.js",
+  "type": "module",
   "files": [
+    "slidem.js",
     "slidem-*"
   ],
   "repository": "git@github.com:ruphin/slidem.git",
   "author": "Goffert van Gool",
+  "contributors": [
+    "Benny Powers <web@bennypowers.com>"
+  ],
   "license": "MIT",
   "scripts": {
-    "build": "cp src/*.js ./ && rollup -c",
-    "dev": "browser-sync start --config browsersync.config.js",
+    "build": "node build.js",
+    "start": "wds --open",
     "release": "np",
-    "test": "echo 'No tests!'"
-  },
-  "dependencies": {
-    "@gluon/gluon": "^2.5.3",
-    "@gluon/keybinding": "^1.1.0",
-    "@gluon/router": "^1.2.1",
-    "fontfaceobserver": "^2.1.0"
+    "test": "wtr",
+    "prepublishOnly": "npm run build"
   },
   "devDependencies": {
-    "@webcomponents/webcomponentsjs": "^2.4.3",
-    "@babel/core": "^7.9.6",
-    "@babel/preset-env": "^7.9.6",
-    "@babel/polyfill": "^7.8.7",
-    "browser-sync": "^2.26.7",
-    "np": "^6.2.3",
-    "rollup": "^2.10.3",
-    "rollup-plugin-babel": "^4.4.0",
-    "rollup-plugin-cleanup": "^3.1.1",
-    "rollup-plugin-filesize": "^9.0.0",
-    "rollup-plugin-includepaths": "^0.2.3",
-    "rollup-plugin-terser": "^5.3.0"
+    "@web/test-runner": "^0.15.0",
+    "esbuild": "^0.15.16",
+    "esbuild-plugin-import-assertions": "^1.0.1",
+    "np": "^7.6.2"
   }
 }

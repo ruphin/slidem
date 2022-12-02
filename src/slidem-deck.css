@@ -1,0 +1,229 @@
+:host {
+  /* inset for active slide */
+  --active-inset-block-start: calc(25% - 20px);
+  --active-inset-block-end: calc(25% - 20px);
+  --active-inset-inline-start: calc(5% - 20px);
+  --active-inset-inline-end: calc(45% - 20px);
+
+  /* inset for next slide */
+  --presenter-inset-block-start: calc(32.5% - 20px);
+  --presenter-inset-block-end: calc(32.5% - 20px);
+  --presenter-inset-inline-start: calc(60.5% - 20px);
+  --presenter-inset-inline-end: calc(4.5% - 20px);
+}
+
+:host {
+  display: block;
+  overflow: hidden;
+  position: absolute;
+  inset: 0 0 0 0;
+  font-family: 'sans-serif';
+  font-size: 56px;
+  line-height: 1;
+}
+
+#slides ::slotted(*) {
+  position: absolute;
+  inset: 0 0 0 0;
+  animation-duration: 0.4s;
+  animation-fill-mode: both;
+  animation-timing-function: ease-in-out;
+}
+
+#slides ::slotted(:not([active]):not([previous]):not([next])) {
+  display: none;
+}
+
+:host(:not([presenter])) #slides ::slotted([next]:not([previous])) {
+  display: none;
+}
+
+#progress {
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline-start: 0;
+  inset-inline-end: 0;
+  height: 50px;
+  text-align: center;
+  display: flex;
+  flex-flow: row;
+  justify-content: center;
+  z-index: 10;
+}
+
+#progress div {
+  height: 8px;
+  width: 8px;
+  border-radius: 50%;
+  border: 2px solid white;
+  margin-left: 6px;
+  margin-right: 6px;
+  background: transparent;
+  transition: background 0.2s, scale 0.2s;
+}
+
+#progress div.active {
+  background: white;
+  scale: 1.3
+}
+
+:host([progress="dark"]) #progress div {
+  border: 2px solid black;
+}
+
+:host([progress="dark"]) #progress div.active {
+  background: black;
+}
+
+:host([progress="none"]) #progress {
+  display: none;
+}
+
+#timer {
+  display: none;
+  position: absolute;
+  inset-block-start: 5%;
+  inset-inline-end: 5%;
+  color: white;
+  font-size: 4vw;
+  font-weight: bold;
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+:host([presenter]) #timer {
+  display: inline;
+}
+
+:host([presenter]) {
+  background: black;
+}
+
+/* White box around active slide */
+:host([presenter])::before,
+:host([presenter])::after {
+  display: block;
+  position: absolute;
+  content: '';
+  border: 2px solid white;
+}
+
+:host([presenter])::before {
+  inset-block: var(--active-inset-block-start) var(--active-inset-block-end);
+  inset-inline: var(--active-inset-inline-start) var(--active-inset-inline-end);
+}
+
+/* White box around next slide */
+:host([presenter])::after {
+  inset-block: var(--presenter-inset-block-start) var(--presenter-inset-block-end);
+  inset-inline: var(--presenter-inset-inline-start) var(--presenter-inset-inline-end);
+}
+
+:host([presenter]) #slides ::slotted(*) {
+  animation: none !important; /* Block user-configured animations */
+}
+
+:host([presenter]) #slides ::slotted([previous]:not([next])) {
+  display: none;
+}
+
+:host([presenter]) #slides ::slotted([active]) {
+  translate: -20% 0;
+  scale: 0.5 !important; /* Force presenter layout */
+}
+
+:host([presenter]) #slides ::slotted([next]) {
+  translate: 28% 0;
+  scale: 0.35 !important; /* Force presenter layout */
+}
+
+:host([presenter]) #progress {
+  translate: -20% 25vh;
+  scale: 0.5;
+}
+
+#notes {
+  font-size: 18px;
+  position: absolute;
+  inset-block-start: calc(var(--presenter-inset-block-start) + var(--presenter-inset-block-end) + 80px);
+  inset-inline-start: var(--presenter-inset-inline-start);
+}
+
+:host(:not([presenter])) #notes,
+#notes ::slotted(:not([active])) {
+  display: none !important;
+}
+
+#slides ::slotted([active]) {
+  z-index: 2;
+}
+
+#slides ::slotted([previous]) {
+  z-index: 0;
+}
+
+#slides ::slotted([in=fade][active].animate-forward) {
+  animation-name: slidem-fade-in;
+}
+
+#slides ::slotted([in=fade][previous].animate-backward) {
+  animation-name: slidem-fade-out;
+  z-index: 3;
+}
+
+#slides ::slotted([out=fade][active].animate-backward) {
+  animation-name: slidem-fade-in;
+}
+
+#slides ::slotted([out=fade][previous].animate-forward) {
+  animation-name: slidem-fade-out;
+  z-index: 3;
+}
+
+#slides ::slotted([in=slide][active].animate-forward) {
+  animation-name: slidem-slide-in-forward;
+}
+
+#slides ::slotted([in=slide][previous].animate-backward) {
+  animation-name: slidem-slide-in-backward;
+  z-index: 3;
+}
+
+#slides ::slotted([out=slide][active].animate-backward) {
+  animation-name: slidem-slide-out-backward;
+}
+
+#slides ::slotted([out=slide][previous].animate-forward) {
+  animation-name: slidem-slide-out-forward;
+  z-index: 3;
+}
+
+@keyframes slidem-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slidem-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes slidem-slide-in-forward {
+  from { translate: 100vw 0; }
+  to { translate: 0 0; }
+}
+
+@keyframes slidem-slide-in-backward {
+  from { translate: 0 0; }
+  to { translate: 100vw 0; }
+}
+
+@keyframes slidem-slide-out-forward {
+  from { translate: 0 0; }
+  to { translate: -100vw 0; }
+}
+
+@keyframes slidem-slide-out-backward {
+  from { translate: -100vw 0; }
+  to { translate: 0 0; }
+}
+

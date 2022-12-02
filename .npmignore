@@ -1,5 +1,8 @@
+src
 images
 videos
-Dockerfile
-Makefile
 demo
+web-dev-server.config.js
+build.js
+index.html
+README.md

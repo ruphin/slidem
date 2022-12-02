@@ -1,0 +1,72 @@
+:host {
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+  align-items: center;
+  background: var(--background, white);
+  background-size: cover;
+  background-position: center;
+}
+
+:host([in=zoom]) #content,
+:host([out=zoom]) #content {
+  animation-duration: 0.4s;
+  animation-fill-mode: both;
+  animation-timing-function: ease-in-out;
+}
+
+:host([in=zoom][active].animate-forward) #content {
+  animation-name: zoom-in;
+}
+
+:host([in=zoom][previous].animate-backward) #content {
+  animation-name: zoom-out;
+}
+
+:host([out=zoom][previous].animate-forward) #content {
+  animation-name: zoom-out;
+}
+
+:host([out=zoom][active].animate-backward) #content {
+  animation-name: zoom-in;
+}
+
+#container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+#content {
+  width: var(--slidem-content-width, 1760px);
+  max-height: var(--slidem-content-height, 990px);
+  flex-shrink: 0;
+}
+
+:host(:not([center])) #content {
+  height: var(--slidem-content-height, 990px);
+}
+
+@keyframes zoom-in {
+  from {
+    opacity: 0;
+    scale: 0;
+  }
+  to {
+    opacity: 1;
+    scale: var(--slidem-content-scale, 1);
+  }
+}
+
+@keyframes zoom-out {
+  from {
+    opacity: 1;
+    scale: var(--slidem-content-scale, 1);
+  }
+  to {
+    opacity: 0;
+    scale: 0;
+  }
+}
+

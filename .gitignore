@@ -3,4 +3,3 @@ slidem-*.js
 slidem-*.js.map
 !src/slidem-*.js
 !src/slidem-*.js.map
-demo/index.es5.js
