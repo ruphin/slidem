@@ -6,8 +6,8 @@
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="Slide'm - Web Components you can use to write your slide deck in HTML" />
 <meta property="og:description" content="Slide'm  - Web Components you can use to write your slide deck in HTML" />
-<link rel="canonical" href="https://slidem.ruph.in/" />
-<meta property="og:url" content="https://slidem.ruph.in/" />
+<link rel="canonical" href="https://slidem.ruphin.net/" />
+<meta property="og:url" content="https://slidem.ruphin.net/" />
 <meta property="og:site_name" content="Slide'm Slide Deck" />
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans+Condensed:700" />
@@ -99,10 +99,9 @@
     <p fit color="--primary" uppercase>
       Read
       <span color="black">
-        <a href="/docs">The Docs</a>
+        <a href="https://github.com/ruphin/slidem/blob/master/README.md">The Docs</a>
       </span>
     </p>
-    <p style="text-align: right;">(soon)</p>
   </slidem-slide>
 </slidem-deck>
 
@@ -270,10 +269,17 @@
 
 <script type="module">
   import {SlidemSlide} from '../slidem-slide.js';
+  
+  const fontLink = document.createElement('link');
+  fontLink.href = 'https://fonts.googleapis.com/css?family=Roboto:400,500,700';
+  fontLink.rel = 'stylesheet';
+  document.head.appendChild(fontLink);
+
   const template = document.getElementById('speaker-slide-template');
   const style = (document.getElementById('speaker-slide-style').content.querySelector('style'))
   const sheet = new CSSStyleSheet();
-        sheet.replaceSync(style.textContent);
+  sheet.replaceSync(style.textContent);
+
   customElements.define('slidem-speaker-slide', class SlidemSpeakerSlide extends SlidemSlide {
     constructor() {
       super();
