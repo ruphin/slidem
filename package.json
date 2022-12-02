@@ -1,6 +1,6 @@
 {
   "name": "slidem",
-  "version": "1.2.8",
+  "version": "2.0.0",
   "description": "A Web Component based slide deck",
   "main": "slidem.js",
   "module": "slidem.js",
