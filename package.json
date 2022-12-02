@@ -19,11 +19,10 @@
     "build": "node build.js",
     "start": "wds --open",
     "release": "np",
-    "test": "wtr",
+    "test": "echo 'no tests'",
     "prepublishOnly": "npm run build"
   },
   "devDependencies": {
-    "@web/test-runner": "^0.15.0",
     "esbuild": "^0.15.16",
     "esbuild-plugin-import-assertions": "^1.0.1",
     "np": "^7.6.2"
