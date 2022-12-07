@@ -3,6 +3,7 @@ import shadowStyle from './slidem-deck.css' assert { type: 'css' };
 import template from './slidem-deck.html' assert { type: 'html-template' };
 
 document.adoptedStyleSheets = [...document.adoptedStyleSheets, globalStyle];
+
 /**
  * **START**
  * `#`
@@ -17,9 +18,16 @@ document.adoptedStyleSheets = [...document.adoptedStyleSheets, globalStyle];
  */
 const STATE_RE = /^#(?:slide-(?<slide>\d+))?(?:\/step-(?<step>\d+|Infinity))?/;
 
+function isInInputLike(event) {
+  return event.composedPath().some(node =>
+    node instanceof HTMLInputElement ||
+    node.hasAttribute?.('contenteditable'));
+}
+
 export class SlidemDeck extends HTMLElement {
   static is = 'slidem-deck';
 
+  /** @type {Set<SlidemDeck>} */
   static #instances = new Set();
 
   // Returns a string representing elapsed time since 'begin'
@@ -62,7 +70,9 @@ export class SlidemDeck extends HTMLElement {
       }
     });
 
-    window.addEventListener('keyup', e => SlidemDeck.#instances.forEach(i => i.#onKeyup(e)));
+    window.addEventListener('keyup', e =>
+      SlidemDeck.#instances.forEach(i =>
+        i.#onKeydown(e)));
 
     /**
      * Gesture navigation support system
@@ -182,8 +192,10 @@ export class SlidemDeck extends HTMLElement {
       .map(slide => customElements.whenDefined(slide.localName)));
   }
 
-  #onKeyup({ key }) {
-    switch (key) {
+  #onKeydown(event) {
+    if (isInInputLike(event))
+      return;
+    switch (event.key) {
       case 'PageDown':
       case 'ArrowRight':
       case 'j':
