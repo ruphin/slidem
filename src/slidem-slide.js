@@ -1,6 +1,7 @@
 import { SlidemSlideBase } from './slidem-slide-base.js';
 
-export class SlidemSlide extends SlidemSlideBase {
+// https://github.com/evanw/esbuild/issues/2800#issuecomment-1378198088
+export const SlidemSlide = (() => class SlidemSlide extends SlidemSlideBase {
   static is = 'slidem-slide';
 
   static observedAttributes = [
@@ -18,7 +19,7 @@ export class SlidemSlide extends SlidemSlideBase {
     return this.querySelectorAll('div');
   }
 
-  async connectedCallback() {
+  connectedCallback() {
     super.connectedCallback();
     for (const node of this.#contentNodes) this.#styleContentNode(node);
     for (const node of this.#layoutNodes) this.#styleLayoutNode(node);
@@ -90,6 +91,6 @@ export class SlidemSlide extends SlidemSlideBase {
       }
     }
   }
-}
+})();
 
 customElements.define(SlidemSlide.is, SlidemSlide);

@@ -1,7 +1,8 @@
 import styleSheet from './slidem-slide-base.css' assert { type: 'css' };
 import template from './slidem-slide-base.html' assert { type: 'html-template' };
 
-export class SlidemSlideBase extends HTMLElement {
+// https://github.com/evanw/esbuild/issues/2800#issuecomment-1378198088
+export const SlidemSlideBase = (() => class SlidemSlideBase extends HTMLElement {
   static observedAttributes = [
     'auto',
     'step',
@@ -50,7 +51,8 @@ export class SlidemSlideBase extends HTMLElement {
 
   constructor() {
     super();
-    this.attachShadow({ mode: 'open' }).append(template.content.cloneNode(true));
+    if (!this.shadowRoot)
+      this.attachShadow({ mode: 'open' }).append(template.content.cloneNode(true));
     this.shadowRoot.adoptedStyleSheets = [...this.shadowRoot.adoptedStyleSheets, styleSheet];
   }
 
@@ -98,7 +100,7 @@ export class SlidemSlideBase extends HTMLElement {
 
   #setStep(step) {
     this.querySelector('[step="1"]')?.toggleAttribute?.('past', step > 1);
-    this.#steps.forEach((el, i) => {
+    this.#steps?.forEach((el, i) => {
       const elStep = i + 2;
       const past = elStep < step;
       const current = elStep === step;
@@ -120,4 +122,4 @@ export class SlidemSlideBase extends HTMLElement {
       this.$.content?.style?.setProperty('scale', 1);
     }
   }
-}
+})();
