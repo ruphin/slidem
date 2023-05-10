@@ -24,8 +24,8 @@
   },
   "devDependencies": {
     "@web/dev-server": "^0.2.1",
-    "esbuild": "^0.15.16",
+    "esbuild": "^0.17.18",
     "esbuild-plugin-import-assertions": "^1.0.1",
-    "np": "^7.6.2"
+    "np": "^7.7.0"
   }
 }
