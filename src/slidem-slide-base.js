@@ -29,11 +29,11 @@ export class SlidemSlideBase extends HTMLElement {
       return parseInt(this.getAttribute('auto')) || 5000;
   }
 
-  set auto(v) {
-    if (!(typeof v === 'number') || Number.isNaN(v))
+  set auto(timer) {
+    if (!(typeof timer === 'number') || Number.isNaN(timer))
       this.removeAttribute('auto');
     else
-      this.setAttribute('auto', v.toString())
+      this.setAttribute('auto', timer)
   }
 
   set step(step) {
