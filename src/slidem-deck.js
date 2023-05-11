@@ -14,9 +14,9 @@ document.adoptedStyleSheets = [...document.adoptedStyleSheets, globalStyle];
  * non-capturing group (_optional_):
  *   `/step-`
  *   named capture group 2 `step`:
- *     Either **0-9** (_>= 1x_) or `Infinity`
+ *     **0-9** (_>= 1x_)
  */
-const STATE_RE = /^#(?:slide-(?<slide>\d+))?(?:\/step-(?<step>\d+|Infinity))?/;
+const STATE_RE = /^#(?:slide-(?<slide>\d+))?(?:\/step-(?<step>\d+))?/;
 
 function isInInputLike(event) {
   return event.composedPath().some(node =>
