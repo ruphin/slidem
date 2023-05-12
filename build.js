@@ -10,8 +10,8 @@ export async function run(watch = process.argv.includes('start')) {
   const LICENSE = await readFile(r('./LICENSE'), 'utf8')
   await build({
     entryPoints: files
-      .filter(x => x.endsWith('.js'))
-      .map(x => r(`./src/${x}`)),
+      .filter(file => file.endsWith('.js'))
+      .map(file => r(`./src/${file}`)),
     outdir: '.',
     banner: { js: `/**\n * @license\n${LICENSE}\n*/`, },
     format: 'esm',

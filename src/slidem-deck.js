@@ -24,8 +24,7 @@ function isInInputLike(event) {
     node.hasAttribute?.('contenteditable'));
 }
 
-// https://github.com/evanw/esbuild/issues/2800#issuecomment-1378198088
-export const SlidemDeck = (() => class SlidemDeck extends HTMLElement {
+export class SlidemDeck extends HTMLElement {
   static is = 'slidem-deck';
 
   /** @type {Set<SlidemDeck>} */
@@ -328,7 +327,7 @@ export const SlidemDeck = (() => class SlidemDeck extends HTMLElement {
       this.#timerInterval = setInterval(() => (this.$.timer.innerText = SlidemDeck.#timer(begin)), 1000);
     }
   }
-})();
+}
 
 SlidemDeck.initListeners();
 
