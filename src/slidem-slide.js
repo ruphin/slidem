@@ -1,7 +1,6 @@
 import { SlidemSlideBase } from './slidem-slide-base.js';
 
-// https://github.com/evanw/esbuild/issues/2800#issuecomment-1378198088
-export const SlidemSlide = (() => class SlidemSlide extends SlidemSlideBase {
+export class SlidemSlide extends SlidemSlideBase {
   static is = 'slidem-slide';
 
   static observedAttributes = [
@@ -91,6 +90,6 @@ export const SlidemSlide = (() => class SlidemSlide extends SlidemSlideBase {
       }
     }
   }
-})();
+}
 
 customElements.define(SlidemSlide.is, SlidemSlide);
