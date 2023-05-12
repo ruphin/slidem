@@ -104,7 +104,11 @@ export class SlidemDeck extends HTMLElement {
   get state() { return location.hash.match(STATE_RE)?.groups ?? { slide: 1, step: 1 }; }
   set state(state) {
     const { state: old } = this;
-    if (state.slide === old.slide && state.step === old.step) return;
+    if ((state.slide === old.slide && state.step === old.step)
+      || state.step === Infinity
+      || state.slide === Infinity
+      || Number.isNaN(state.step)
+      || Number.isNaN(state.slide)) return;
     state.step ??= old.step;
     state.slide ??= old.slide;
     const hash = `#slide-${state.slide}/step-${state.step}`;
