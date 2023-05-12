@@ -56,12 +56,7 @@ export class SlidemSlideBase extends HTMLElement {
 
   connectedCallback() {
     SlidemSlideBase.#instances.add(this);
-    this.#steps = Array.from(this.querySelectorAll('[reveal]'));
-    this.steps = this.#steps.length;
-    this.#resizeContent();
-    this.#steps.forEach((step, i) => step.setAttribute('step', i + 2));
-    if (this.#steps.length)
-      this.#steps[0].previousElementSibling?.setAttribute('step', 1);
+    this.defineSteps(this.querySelector('[reveal]'));
   }
 
   disconnectedCallback() {
@@ -77,6 +72,28 @@ export class SlidemSlideBase extends HTMLElement {
       }
       this.#setStep(step);
     }
+  }
+
+  /**
+   * Imperatively set the list of steps for this slide
+   * @example when the steps are located in the shadow root
+   *          ```javascript
+   *          class DeclarativeShadowSlide extends SlidemSlideBase {
+   *            async connectedCallback() {
+   *              super.connectedCallback();
+   *              await polyfillDeclarativeShadowDOM(this);
+   *              this.defineSteps(this.shadowRoot.querySelectorAll('[reveal]'));
+   *            }
+   *          }
+   *          ```
+   */
+  defineSteps(nodelist) {
+    this.#steps = Array.from(nodelist ?? []);
+    this.steps = this.#steps.length;
+    this.#resizeContent();
+    this.#steps.forEach((step, i) => step.setAttribute('step', i + 2));
+    if (this.#steps.length)
+      this.#steps[0].previousElementSibling?.setAttribute('step', 1);
   }
 
   #setStep(step) {

@@ -91,4 +91,25 @@ class SlidemSpeakerSlide extends SlidemSlide {
 customElements.define(SlidemSpeakerSlide.id, SlidemSpeakerSlide);
 ```
 
+### Escape Hatches
+
+Occasionally, when defining custom slide elements, you may with to override the 
+default behaviour. One example would be when your slides' content is contained 
+within their shadow roots, perhaps by way of [Declarative Shadow DOM][dsd].
+
+In that case, you can imperatively define your slide's steps using the 
+`defineSteps(nodelist)` method:
+
+```js
+class DeclarativeShadowSlide extends SlidemSlideBase {
+  async connectedCallback() {
+    super.connectedCallback();
+    await polyfillDeclarativeShadowDOM(this);
+    this.defineSteps(this.shadowRoot.querySelectorAll('[reveal]'));
+  }
+}
+```
+
 See [`index.html`](./blob/master/index.html) for a complete example.
+
+[dsd]: https://developer.chrome.com/articles/declarative-shadow-dom/
