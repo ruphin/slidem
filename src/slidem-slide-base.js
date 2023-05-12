@@ -1,7 +1,6 @@
 import styleSheet from './slidem-slide-base.css' assert { type: 'css' };
 import template from './slidem-slide-base.html' assert { type: 'html-template' };
 
-// https://github.com/evanw/esbuild/issues/2800#issuecomment-1378198088
 export class SlidemSlideBase extends HTMLElement {
   static observedAttributes = [
     'auto',
