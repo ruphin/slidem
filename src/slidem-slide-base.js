@@ -56,7 +56,7 @@ export class SlidemSlideBase extends HTMLElement {
 
   connectedCallback() {
     SlidemSlideBase.#instances.add(this);
-    this.defineSteps(this.querySelector('[reveal]'));
+    this.defineSteps(this.querySelectorAll('[reveal]'));
   }
 
   disconnectedCallback() {
