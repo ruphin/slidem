@@ -23,8 +23,8 @@
     "prepublishOnly": "npm run build"
   },
   "devDependencies": {
-    "@web/dev-server": "^0.2.1",
-    "esbuild": "^0.17.19",
+    "@web/dev-server": "^0.2.3",
+    "esbuild": "^0.18.4",
     "esbuild-plugin-import-assertions": "^1.0.1",
     "np": "^7.7.0"
   }
