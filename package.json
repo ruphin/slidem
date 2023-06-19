@@ -26,6 +26,6 @@
     "@web/dev-server": "^0.2.3",
     "esbuild": "^0.18.4",
     "esbuild-plugin-import-assertions": "^1.0.1",
-    "np": "^7.7.0"
+    "np": "^8.0.4"
   }
 }
