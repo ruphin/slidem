@@ -1,7 +1,7 @@
 import { SlidemSlideBase } from './slidem-slide-base.js';
 
-import shadowStyle from './slidem-video-slide.css' assert { type: 'css' };
-import template from './slidem-video-slide.html' assert { type: 'html-template' };
+import shadowStyle from './slidem-video-slide.css';
+import template from './slidem-video-slide.html';
 
 export class SlidemVideoSlide extends SlidemSlideBase {
   static is = 'slidem-video-slide';

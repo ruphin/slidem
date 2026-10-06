@@ -1,6 +1,6 @@
-import globalStyle from './slidem-deck-global.css' assert { type: 'css' };
-import shadowStyle from './slidem-deck.css' assert { type: 'css' };
-import template from './slidem-deck.html' assert { type: 'html-template' };
+import globalStyle from './slidem-deck-global.css';
+import shadowStyle from './slidem-deck.css';
+import template from './slidem-deck.html';
 
 document.adoptedStyleSheets = [...document.adoptedStyleSheets, globalStyle];
 

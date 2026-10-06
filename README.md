@@ -113,3 +113,13 @@ class DeclarativeShadowSlide extends SlidemSlideBase {
 See [`index.html`](./blob/master/index.html) for a complete example.
 
 [dsd]: https://developer.chrome.com/articles/declarative-shadow-dom/
+
+## Development
+
+```sh
+npm install
+npm run dev      # start the Vite dev server with the demo deck (index.html)
+npm run build    # build slidem-*.js next to package.json
+npm run preview  # serve the demo deck using the built files
+npm run release  # publish a new version with np
+```

@@ -1,4 +1,6 @@
 node_modules
+dist
+# Build output (written next to package.json, see vite.config.js)
 slidem-*.js
 slidem-*.js.map
 !src/slidem-*.js

@@ -1,5 +1,5 @@
-import styleSheet from './slidem-slide-base.css' assert { type: 'css' };
-import template from './slidem-slide-base.html' assert { type: 'html-template' };
+import styleSheet from './slidem-slide-base.css';
+import template from './slidem-slide-base.html';
 
 export class SlidemSlideBase extends HTMLElement {
   static observedAttributes = [

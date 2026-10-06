@@ -2,7 +2,6 @@ src
 images
 videos
 demo
-web-dev-server.config.js
-build.js
+vite.config.js
 index.html
 README.md
